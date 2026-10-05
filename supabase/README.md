@@ -12,7 +12,8 @@ dipanggil oleh kode di `src/`. Kalau salah satu diubah di database, sesuaikan ju
 > `20261005170000_patient_app.sql` (fungsi `patient_*`, tabel `patient_profiles`, bucket `patient-avatars`,
 > RLS), tetapi file itu tidak ikut di-commit. Ambil dari tempat migration itu dijalankan (repo Nakesa Pro atau
 > riwayat migration di Supabase), atau buat ulang dari database dengan `supabase db pull`, lalu simpan di
-> `supabase/migrations/` agar bisa di-review dan dijalankan ulang.
+> `supabase/migrations/` agar bisa di-review dan dijalankan ulang. Migration yang sudah ada di folder itu
+> (`20261005200000_patient_google_sign_in.sql`) dijalankan **setelah** migration tersebut.
 
 ## Tabel yang diakses langsung (dilindungi RLS)
 
@@ -40,6 +41,7 @@ Semua fungsi hanya mengembalikan praktik yang `is_listed` dan hanya data publikn
 | `patient_list_appointments` | – | `AppointmentRow[]`, **urut tanggal naik** (aplikasi membalik urutan untuk Riwayat) | Janji Temu, Beranda |
 | `patient_get_appointment` | `p_booking_id uuid` | `AppointmentRow` | Detail janji temu, booking sukses |
 | `patient_cancel_appointment` | `p_booking_id uuid` | – (status jadi `batal`, baris tidak dihapus) | Batalkan janji temu |
+| `patient_claim_new_account` | – | – (role akun Google baru menjadi `PATIENT`, atau error `P0001`) | Setelah login Google |
 
 `AppointmentRow` (lihat `src/features/appointment/appointment-service.ts`):
 `id, status, date, start_time, end_time, service, service_id, notes, created_at, updated_at, can_cancel,
@@ -71,7 +73,31 @@ signed URL (1 jam). Policy: pasien hanya boleh `insert`, `select`, dan `delete` 
 - Akun dengan role selain `PATIENT` (mis. tenaga kesehatan) dikeluarkan lagi oleh aplikasi dengan pesan;
   fungsi `patient_*` juga menolak role lain.
 - **Redirect URLs** (Authentication → URL Configuration) harus berisi `nakesapatient://**` untuk build dan
-  `exp://**` untuk Expo Go, karena link konfirmasi & reset kata sandi kembali ke `…/auth/callback`.
+  `exp://**` untuk Expo Go, karena link konfirmasi, reset kata sandi, dan login Google kembali ke
+  `…/auth/callback`.
+
+### Login Google
+
+Login Google memakai provider Google di Supabase Auth: aplikasi membuka browser HP, lalu Supabase
+mengembalikan sesi ke `…/auth/callback` (flow implicit, sama seperti link email).
+
+Masalahnya, akun Google baru **tidak bisa** mengirim `app: 'nakesa_patient'` saat dibuat, sehingga trigger
+sign-up memberinya role bawaan (bukan `PATIENT`). Karena itu, setelah akun Google masuk dan belum menjadi
+pasien, aplikasi memanggil `patient_claim_new_account()` (`migrations/20261005200000_patient_google_sign_in.sql`).
+Fungsi ini hanya mengubah role menjadi `PATIENT` jika akunnya:
+
+- dibuat lewat Google/provider sosial (bukan email/kata sandi),
+- dibuat kurang dari 15 menit yang lalu, dan
+- tidak memiliki praktik di Nakesa Pro.
+
+Selain itu fungsi menolak dengan pesan `P0001`, dan aplikasi mengeluarkan akun itu lagi dengan pesan tersebut.
+Pasien yang sudah terdaftar dengan email (dan sudah dikonfirmasi) lalu login dengan Google memakai email yang
+sama ditautkan otomatis oleh Supabase ke akun yang sama, jadi role pasiennya tetap. Fungsi ini sudah diuji dengan PostgreSQL 16 pada skema tiruan;
+cocokkan dulu dengan trigger sign-up dan tabel Nakesa Pro sebelum dijalankan di produksi.
+
+Jalankan migration ini **sebelum** provider Google diaktifkan. Kalau provider aktif lebih dulu, akun Google
+yang sempat dibuat tetap memakai role bawaan; setelah 15 menit akun itu tidak bisa lagi diklaim dan perlu
+dihapus atau diubah manual di Supabase.
 
 ## Data demo (development saja)
 
