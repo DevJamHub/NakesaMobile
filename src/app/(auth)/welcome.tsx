@@ -5,7 +5,10 @@ import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/ui/AppText';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Screen } from '@/components/ui/Screen';
+import { NoticeBox } from '@/components/ui/States';
 import { colors, radius, spacing } from '@/constants/theme';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 
 const POINTS = [
   { icon: 'search' as const, text: 'Cari dokter, bidan, dan praktik di sekitar Anda' },
@@ -14,13 +17,17 @@ const POINTS = [
 ];
 
 export default function WelcomeScreen() {
+  // e.g. a Google account that turned out to be a Nakesa Pro account
+  const { notice } = useAuth();
   return (
     <Screen
       contentStyle={styles.content}
       footer={
         <>
-          <PrimaryButton title="Daftar" onPress={() => router.push('/register')} />
-          <PrimaryButton title="Saya sudah punya akun" variant="secondary" onPress={() => router.push('/login')} />
+          {notice ? <NoticeBox message={notice} tone="info" /> : null}
+          <PrimaryButton title="Daftar dengan email" onPress={() => router.push('/register')} />
+          <GoogleSignInButton />
+          <PrimaryButton title="Saya sudah punya akun" variant="ghost" onPress={() => router.push('/login')} />
         </>
       }>
       <View style={styles.hero}>

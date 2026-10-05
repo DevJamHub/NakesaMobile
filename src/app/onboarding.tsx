@@ -21,10 +21,12 @@ export default function OnboardingScreen() {
   const [errors, setErrors] = useState<PatientFormErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<'save' | 'skip' | null>(null);
+  // Email sign-ups gave name and phone already; Google accounts arrive without a phone number.
+  const withIdentity = !account.phone || !account.fullName.trim();
 
   // Saving marks onboarding as done; the navigator then opens Home.
   const finish = async (skip: boolean) => {
-    const { errors: found, changes } = skip ? { errors: {}, changes: {} } : validatePatientForm(values, false);
+    const { errors: found, changes } = skip ? { errors: {}, changes: {} } : validatePatientForm(values, withIdentity);
     setErrors(found);
     if (!changes) return;
     setBusy(skip ? 'skip' : 'save');
@@ -52,7 +54,7 @@ export default function OnboardingScreen() {
         </AppText>
       </View>
       {error ? <NoticeBox message={error} /> : null}
-      <PatientFormFields values={values} errors={errors} onChange={setValues} withIdentity={false} />
+      <PatientFormFields values={values} errors={errors} onChange={setValues} withIdentity={withIdentity} />
     </Screen>
   );
 }

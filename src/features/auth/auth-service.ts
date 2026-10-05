@@ -1,5 +1,6 @@
 // Authentication: the only file that calls Supabase Auth.
 import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 
 import { supabase } from '@/lib/supabase';
 import { cleanPhone } from '@/lib/format';
@@ -42,6 +43,48 @@ export async function resendConfirmation(email: string) {
 
 export async function signIn(email: string, password: string) {
   const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+  if (error) throw error;
+}
+
+/**
+ * Google sign-in in the phone's browser (Supabase OAuth). Google sends the patient back to
+ * …/auth/callback with the session in the link, like the email links. False when the patient
+ * closes the browser.
+ */
+export async function signInWithGoogle(): Promise<boolean> {
+  const redirectTo = authRedirectUrl();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    // Let the patient pick the account, e.g. on a phone shared with family.
+    options: { redirectTo, skipBrowserRedirect: true, queryParams: { prompt: 'select_account' } },
+  });
+  if (error) throw error;
+
+  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+  if (result.type !== 'success') return false;
+
+  const link = await sessionFromUrl(result.url);
+  if (link.kind === 'error') {
+    throw Object.assign(new Error(link.description ?? 'Google sign-in failed'), { code: link.code ?? undefined });
+  }
+  if (link.kind === 'none') throw new Error('Google sign-in returned no session');
+  return true;
+}
+
+/** Whether the signed-in account was created by Google sign-in rather than with email. */
+export async function createdWithGoogle(): Promise<boolean> {
+  const { data } = await supabase.auth.getSession();
+  const provider = data.session?.user.app_metadata.provider;
+  return !!provider && provider !== 'email';
+}
+
+/**
+ * Email sign-ups tell the database "nakesa_patient" when the account is made (see signUp); Google
+ * sign-ups cannot, so a new Google account asks for the patient role right after. The database
+ * decides: it refuses accounts that are not brand new or that are used in Nakesa Pro.
+ */
+export async function claimPatientRole() {
+  const { error } = await supabase.rpc('patient_claim_new_account');
   if (error) throw error;
 }
 

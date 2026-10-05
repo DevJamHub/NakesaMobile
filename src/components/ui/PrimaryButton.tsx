@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View, type StyleProp, t
 
 import { colors, fontSize, radius } from '@/constants/theme';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'whatsapp';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'whatsapp' | 'google';
 
 type Props = {
   title: string;
@@ -24,6 +24,7 @@ const VARIANTS: Record<Variant, { bg: string; pressed: string; fg: string; borde
   ghost: { bg: 'transparent', pressed: colors.primarySoft, fg: colors.primary },
   danger: { bg: colors.surface, pressed: colors.dangerSoft, fg: colors.danger, border: colors.danger },
   whatsapp: { bg: colors.whatsapp, pressed: '#17804A', fg: '#FFFFFF' },
+  google: { bg: colors.surface, pressed: colors.neutralSoft, fg: colors.text, border: colors.border },
 };
 
 export function PrimaryButton({

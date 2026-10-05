@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
+import { OrDivider } from '@/components/ui/OrDivider';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
@@ -10,12 +11,15 @@ import { TextField } from '@/components/ui/TextField';
 import { MIN_PASSWORD_LENGTH } from '@/constants/config';
 import { colors, spacing } from '@/constants/theme';
 import { signUp } from '@/features/auth/auth-service';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { friendlyError } from '@/lib/errors';
 import { isValidEmail, isValidPhone } from '@/lib/format';
 
 type Field = 'fullName' | 'email' | 'phone' | 'password' | 'confirm';
 
 export default function RegisterScreen() {
+  const { notice, clearNotice } = useAuth();
   const [values, setValues] = useState<Record<Field, string>>({
     fullName: '',
     email: '',
@@ -30,6 +34,7 @@ export default function RegisterScreen() {
   const set = (field: Field) => (text: string) => setValues((v) => ({ ...v, [field]: text }));
 
   const submit = async () => {
+    clearNotice();
     const next: Partial<Record<Field, string>> = {};
     if (!values.fullName.trim()) next.fullName = 'Nama lengkap wajib diisi.';
     if (!isValidEmail(values.email)) next.email = 'Format email belum benar.';
@@ -60,6 +65,7 @@ export default function RegisterScreen() {
         <AppText color={colors.textMuted}>Gratis, hanya butuh satu menit.</AppText>
       </View>
 
+      {notice ? <NoticeBox message={notice} tone="info" /> : null}
       {error ? <NoticeBox message={error} /> : null}
 
       <TextField
@@ -122,6 +128,8 @@ export default function RegisterScreen() {
       </AppText>
 
       <PrimaryButton title="Daftar" onPress={submit} loading={busy} />
+      <OrDivider />
+      <GoogleSignInButton />
       <PrimaryButton title="Sudah punya akun? Masuk" variant="ghost" onPress={() => router.replace('/login')} />
     </Screen>
   );

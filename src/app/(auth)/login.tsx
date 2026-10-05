@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
+import { OrDivider } from '@/components/ui/OrDivider';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
@@ -10,6 +11,7 @@ import { TextField } from '@/components/ui/TextField';
 import { colors, spacing } from '@/constants/theme';
 import { resendConfirmation, signIn } from '@/features/auth/auth-service';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { GoogleSignInButton } from '@/features/auth/GoogleSignInButton';
 import { friendlyError } from '@/lib/errors';
 import { isValidEmail } from '@/lib/format';
 
@@ -99,6 +101,8 @@ export default function LoginScreen() {
       </Link>
 
       <PrimaryButton title="Masuk" onPress={submit} loading={busy} />
+      <OrDivider />
+      <GoogleSignInButton />
       <PrimaryButton title="Belum punya akun? Daftar" variant="ghost" onPress={() => router.replace('/register')} />
     </Screen>
   );

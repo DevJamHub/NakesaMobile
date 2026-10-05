@@ -3,15 +3,17 @@
 import type { Session } from '@supabase/supabase-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import { friendlyError } from '@/lib/errors';
+import { friendlyError, isNetworkError } from '@/lib/errors';
 import { supabase } from '@/lib/supabase';
 import { fetchAccount } from '@/features/profile/profile-service';
 import type { PatientAccount } from '@/types/domain';
 
-import { signOut as authSignOut } from './auth-service';
+import { claimPatientRole, createdWithGoogle, signOut as authSignOut } from './auth-service';
 
 const NOT_A_PATIENT =
   'Akun ini terdaftar sebagai tenaga kesehatan di Nakesa Pro. Untuk Nakesa Patient, daftar dengan email lain.';
+const GOOGLE_NOT_READY =
+  'Akun Google ini belum bisa dipakai di Nakesa Patient. Daftar dengan email dulu, atau coba lagi nanti.';
 
 type AuthContextValue = {
   /** True until the stored session and the account have been loaded. */
@@ -20,7 +22,7 @@ type AuthContextValue = {
   account: PatientAccount | null;
   /** Loading the account failed (e.g. no internet). */
   accountError: string | null;
-  /** Message for the login screen, e.g. when a health worker account tried to sign in. */
+  /** Message for the welcome / login / register screens, e.g. when a health worker account tried to sign in. */
   notice: string | null;
   clearNotice: () => void;
   reloadAccount: () => Promise<void>;
@@ -30,15 +32,27 @@ type AuthContextValue = {
 
 /** Result of loading the account of one user; ignored once another user is signed in. */
 type Loaded = { userId: string; account: PatientAccount | null; error: string | null };
+/** Not a patient account: signed out again, with this message as the notice. */
+type Refused = { refused: string };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function resolveAccount(userId: string): Promise<Loaded | 'not_a_patient'> {
+async function resolveAccount(userId: string): Promise<Loaded | Refused> {
   try {
-    const account = await fetchAccount(userId);
+    let account = await fetchAccount(userId);
     if (!account) throw new Error('Profil tidak ditemukan.');
+    if (account.role !== 'PATIENT' && (await createdWithGoogle())) {
+      // A new Google account has no role choice at sign-up; the database decides now.
+      try {
+        await claimPatientRole();
+      } catch (error) {
+        if (isNetworkError(error)) throw error; // offline: let the patient try again
+        return { refused: friendlyError(error, GOOGLE_NOT_READY) };
+      }
+      account = (await fetchAccount(userId, 1)) ?? account;
+    }
     // The database refuses patient features to other roles anyway; this only explains why.
-    if (account.role !== 'PATIENT') return 'not_a_patient';
+    if (account.role !== 'PATIENT') return { refused: NOT_A_PATIENT };
     return { userId, account, error: null };
   } catch (error) {
     return { userId, account: null, error: friendlyError(error, 'Data akun belum bisa dimuat. Coba lagi.') };
@@ -72,8 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadAccount = useCallback(
     (id: string) =>
       resolveAccount(id).then(async (result) => {
-        if (result === 'not_a_patient') {
-          setNotice(NOT_A_PATIENT);
+        if ('refused' in result) {
+          setNotice(result.refused);
           await authSignOut().catch(() => supabase.auth.signOut({ scope: 'local' }));
         } else {
           setLoaded(result);

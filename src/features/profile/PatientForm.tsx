@@ -15,7 +15,7 @@ type Props = {
   values: PatientFormValues;
   errors: PatientFormErrors;
   onChange: (values: PatientFormValues) => void;
-  /** Name, phone and address (not asked during onboarding). */
+  /** Name, phone and address (asked during onboarding only when missing, e.g. after Google sign-in). */
   withIdentity: boolean;
 };
 

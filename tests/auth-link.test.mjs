@@ -10,6 +10,15 @@ test('a confirmation link starts a session', () => {
   );
 });
 
+test('the redirect after Google sign-in starts a session too', () => {
+  assert.deepEqual(
+    parseAuthLink(
+      'nakesapatient://auth/callback#access_token=abc&expires_at=1791000000&expires_in=3600&provider_token=ya29.x&refresh_token=def&token_type=bearer',
+    ),
+    { kind: 'session', accessToken: 'abc', refreshToken: 'def', type: null },
+  );
+});
+
 test('a password reset link is recognised, also from Expo Go', () => {
   const link = parseAuthLink('exp://192.168.1.5:8081/--/auth/callback#access_token=a&refresh_token=b&type=recovery');
   assert.equal(link.kind, 'session');
