@@ -1,4 +1,4 @@
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { HealthWorkerCard } from '@/components/HealthWorkerCard';
@@ -17,7 +17,8 @@ import { spacing } from '@/constants/theme';
 import { getPractice } from '@/features/practice/practice-service';
 import { practiceSubtitle, professionColor, professionIcon } from '@/features/practice/profession';
 import { useAsync } from '@/hooks/useAsync';
-import { waLink } from '@/lib/format';
+import { mapsLink, telLink, waLink } from '@/lib/format';
+import { openLink } from '@/lib/links';
 
 export default function PracticeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,6 +35,8 @@ export default function PracticeDetailScreen() {
       ? 'Praktik belum mengatur jam praktik. Hubungi praktik langsung.'
       : null;
   const place = [practice.address, practice.city, practice.province].filter(Boolean).join(', ');
+  const phone = practice.phone;
+  const maps = mapsLink(practice);
 
   return (
     <Screen
@@ -66,27 +69,53 @@ export default function PracticeDetailScreen() {
         <Badge label={practice.is_open ? 'Sedang buka' : 'Sedang tutup'} tone={practice.is_open ? 'success' : 'neutral'} dot />
       </View>
 
-      <Card style={styles.card}>
-        {place ? (
-          <InfoRow icon="location-outline" label="Alamat">
-            {place}
-          </InfoRow>
-        ) : null}
-        {practice.phone ? (
-          <InfoRow icon="call-outline" label="Telepon / WhatsApp">
-            {practice.phone}
-          </InfoRow>
-        ) : null}
-        {practice.phone ? (
-          <PrimaryButton
-            title="Tanya via WhatsApp"
-            icon="logo-whatsapp"
-            variant="whatsapp"
-            compact
-            onPress={() => Linking.openURL(waLink(practice.phone!, `Halo ${practice.name}, saya ingin bertanya.`))}
-          />
-        ) : null}
-      </Card>
+      {place || phone || maps ? (
+        <Card style={styles.card}>
+          {place ? (
+            <InfoRow icon="location-outline" label="Alamat">
+              {place}
+            </InfoRow>
+          ) : null}
+          {phone ? (
+            <InfoRow icon="call-outline" label="Telepon / WhatsApp">
+              {phone}
+            </InfoRow>
+          ) : null}
+          {phone || maps ? (
+            <View style={styles.actions}>
+              {phone ? (
+                <PrimaryButton
+                  title="Telepon"
+                  icon="call-outline"
+                  variant="secondary"
+                  compact
+                  style={styles.action}
+                  onPress={() => openLink(telLink(phone))}
+                />
+              ) : null}
+              {maps ? (
+                <PrimaryButton
+                  title="Buka peta"
+                  icon="map-outline"
+                  variant="secondary"
+                  compact
+                  style={styles.action}
+                  onPress={() => openLink(maps)}
+                />
+              ) : null}
+            </View>
+          ) : null}
+          {phone ? (
+            <PrimaryButton
+              title="Tanya via WhatsApp"
+              icon="logo-whatsapp"
+              variant="whatsapp"
+              compact
+              onPress={() => openLink(waLink(phone, `Halo ${practice.name}, saya ingin bertanya.`))}
+            />
+          ) : null}
+        </Card>
+      ) : null}
 
       {practice.description ? (
         <View>
@@ -134,5 +163,7 @@ export default function PracticeDetailScreen() {
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', gap: spacing.sm, paddingTop: spacing.sm },
   card: { gap: spacing.md },
+  actions: { flexDirection: 'row', gap: spacing.sm },
+  action: { flex: 1 },
   list: { gap: spacing.md },
 });

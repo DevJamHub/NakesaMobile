@@ -44,6 +44,8 @@ export default function ConfirmBookingScreen() {
 
   const p = practice.data;
   const service = p.services.find((s) => (params.serviceId ? s.id === params.serviceId : s.name === params.serviceName));
+  // The practice confirms by phone/WhatsApp, so a booking needs the patient's number.
+  const hasPhone = !!account.phone;
 
   const submit = async () => {
     setBusy(true);
@@ -74,6 +76,8 @@ export default function ConfirmBookingScreen() {
       footer={
         slotTaken ? (
           <PrimaryButton title="Pilih jam lain" onPress={() => router.back()} />
+        ) : !hasPhone ? (
+          <PrimaryButton title="Isi nomor HP dulu" icon="call-outline" onPress={() => router.push('/profile/edit')} />
         ) : (
           <PrimaryButton title="Buat Janji Temu" icon="checkmark-circle" onPress={submit} loading={busy} />
         )
@@ -120,8 +124,8 @@ export default function ConfirmBookingScreen() {
         <InfoRow icon="call-outline" label="Nomor HP">
           {account.phone ?? '-'}
         </InfoRow>
-        {!account.phone ? (
-          <NoticeBox message="Nomor HP belum diisi. Isi dulu di Profil → Ubah profil." />
+        {!hasPhone ? (
+          <NoticeBox message="Nomor HP belum diisi. Praktik memerlukannya untuk mengonfirmasi janji temu Anda." />
         ) : null}
       </Card>
 

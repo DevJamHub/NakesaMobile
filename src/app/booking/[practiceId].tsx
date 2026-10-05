@@ -15,6 +15,7 @@ import { colors, radius, spacing } from '@/constants/theme';
 import { getAvailableSlots } from '@/features/appointment/appointment-service';
 import { getPractice } from '@/features/practice/practice-service';
 import { useAsync } from '@/hooks/useAsync';
+import { useRevalidateOnFocus } from '@/hooks/useRevalidateOnFocus';
 import { DAYS_SHORT, MONTHS_SHORT, dayOfWeek, formatDate, shortTime, todayWIB } from '@/lib/format';
 import type { Service, TimeSlot } from '@/types/domain';
 
@@ -47,29 +48,43 @@ export default function ChooseScheduleScreen() {
   const service = services.length === 1 ? services[0] : services.find((s) => serviceKey(s) === serviceChoice) ?? null;
   const needsService = services.length > 0;
   const date = dateChoice ?? dates.find((d) => d.open)?.iso ?? null;
-  const ready = !!date && (!needsService || !!service);
+  const ready = !!date && (!needsService || !!service) && !!practice.data?.booking_enabled;
 
   const slots = useAsync(
     () => getAvailableSlots(practiceId, date!, service?.id ?? null),
     `${practiceId}:${date}:${service ? serviceKey(service) : ''}`,
     ready,
   );
+  // Back from the confirmation (e.g. the time was just taken by someone else): show fresh times.
+  useRevalidateOnFocus(slots.revalidate);
 
   if (practice.loading) return <LoadingState />;
   if (practice.error || !practice.data) return <ErrorState message={practice.error} onRetry={practice.reload} />;
 
   const p = practice.data;
+  if (!p.booking_enabled) {
+    return (
+      <EmptyState
+        icon="lock-closed-outline"
+        title="Booking online ditutup"
+        message="Praktik ini sedang tidak menerima janji temu lewat aplikasi. Hubungi praktik langsung."
+      />
+    );
+  }
+
   const freeSlots = slots.data?.filter((s) => s.available) ?? [];
+  // The chosen time only counts while it is still free in the latest list.
+  const chosen = slot && freeSlots.some((s) => s.start === slot.start) ? slot : null;
 
   const next = () => {
-    if (!date || !slot) return;
+    if (!date || !chosen) return;
     router.push({
       pathname: '/booking/confirm',
       params: {
         practiceId,
         date,
-        time: slot.start,
-        endTime: slot.end,
+        time: chosen.start,
+        endTime: chosen.end,
         serviceId: service?.id ?? '',
         serviceName: service?.name ?? '',
         healthWorkerId: healthWorkerId ?? '',
@@ -83,12 +98,12 @@ export default function ChooseScheduleScreen() {
       edges={['bottom']}
       footer={
         <>
-          {slot && date ? (
+          {chosen && date ? (
             <AppText variant="small" center>
-              {formatDate(date)}, jam {shortTime(slot.start)}
+              {formatDate(date)}, jam {shortTime(chosen.start)}
             </AppText>
           ) : null}
-          <PrimaryButton title="Lanjut" onPress={next} disabled={!slot} />
+          <PrimaryButton title="Lanjut" onPress={next} disabled={!chosen} />
         </>
       }>
       <View>
@@ -150,7 +165,9 @@ export default function ChooseScheduleScreen() {
 
       <View>
         <SectionHeader title={needsService ? '3. Pilih jam' : '2. Pilih jam'} />
-        {!ready ? (
+        {!date ? (
+          <AppText variant="small">Belum ada tanggal praktik yang bisa dipilih. Hubungi praktik langsung.</AppText>
+        ) : !ready ? (
           <AppText variant="small">Pilih layanan dulu untuk melihat jam yang tersedia.</AppText>
         ) : slots.loading ? (
           <LoadingState fill={false} message="Mencari jam kosong…" />
@@ -170,7 +187,7 @@ export default function ChooseScheduleScreen() {
                 key={s.start}
                 label={shortTime(s.start)}
                 disabled={!s.available}
-                selected={slot?.start === s.start}
+                selected={chosen?.start === s.start}
                 onPress={() => setSlot(s)}
                 style={styles.slot}
               />

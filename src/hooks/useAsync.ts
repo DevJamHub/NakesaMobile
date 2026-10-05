@@ -13,9 +13,13 @@ export function useAsync<T>(load: () => Promise<T>, key: string, enabled = true)
   const [state, setState] = useState<State<T>>({ data: undefined, error: null, loading: enabled, refreshing: false });
   const loadRef = useRef(load);
   loadRef.current = load;
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
   const latest = useRef(0);
 
   const run = useCallback(async (mode: 'load' | 'refresh' | 'silent') => {
+    // Still waiting (e.g. for a choice): `load` may need data that is not there yet.
+    if (!enabledRef.current) return;
     const call = ++latest.current;
     setState((s) => ({
       data: mode === 'load' ? undefined : s.data,
@@ -34,8 +38,12 @@ export function useAsync<T>(load: () => Promise<T>, key: string, enabled = true)
   }, []);
 
   useEffect(() => {
-    if (enabled) run('load');
-    else setState({ data: undefined, error: null, loading: false, refreshing: false });
+    if (enabled) {
+      run('load');
+    } else {
+      latest.current++; // a request still on its way belongs to the old input
+      setState({ data: undefined, error: null, loading: false, refreshing: false });
+    }
   }, [key, enabled, run]);
 
   return {

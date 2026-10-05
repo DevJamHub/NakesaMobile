@@ -57,10 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const accountError = current?.error ?? null;
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setSessionReady(true);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => setSession(data.session))
+      // A stored session that cannot be read: start signed out instead of loading forever.
+      .catch(() => setSession(null))
+      .finally(() => setSessionReady(true));
     // Only store the session here: Supabase must not be called inside this callback.
     const { data } = supabase.auth.onAuthStateChange((_event, next) => setSession(next));
     return () => data.subscription.unsubscribe();

@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Linking, StyleSheet, View } from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback } from 'react';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { AppointmentCard } from '@/components/AppointmentCard';
 import { AppText } from '@/components/ui/AppText';
@@ -12,16 +13,29 @@ import { getAppointment } from '@/features/appointment/appointment-service';
 import { appointmentWhatsApp } from '@/features/appointment/whatsapp';
 import { useAccount } from '@/features/auth/AuthProvider';
 import { useAsync } from '@/hooks/useAsync';
+import { openLink } from '@/lib/links';
+
+/** Leaves the booking flow: back to the tabs, then to the chosen tab. */
+function goTo(path: '/appointments' | '/') {
+  router.dismissAll();
+  router.navigate(path);
+}
 
 export default function BookingSuccessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const account = useAccount();
   const appointment = useAsync(() => getAppointment(id), id);
 
-  const goTo = (path: '/appointments' | '/') => {
-    router.dismissAll();
-    router.navigate(path);
-  };
+  // Android back button: the booking is done, so go to the appointments instead of the booking steps.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        goTo('/appointments');
+        return true;
+      });
+      return () => subscription.remove();
+    }, []),
+  );
 
   if (appointment.loading) return <LoadingState />;
   if (appointment.error || !appointment.data) {
@@ -40,7 +54,7 @@ export default function BookingSuccessScreen() {
       footer={
         <>
           {wa ? (
-            <PrimaryButton title="Kabari praktik via WhatsApp" icon="logo-whatsapp" variant="whatsapp" onPress={() => Linking.openURL(wa)} />
+            <PrimaryButton title="Kabari praktik via WhatsApp" icon="logo-whatsapp" variant="whatsapp" onPress={() => openLink(wa)} />
           ) : null}
           <PrimaryButton title="Lihat janji temu saya" variant={wa ? 'secondary' : 'primary'} onPress={() => goTo('/appointments')} />
           <PrimaryButton title="Kembali ke beranda" variant="ghost" onPress={() => goTo('/')} />

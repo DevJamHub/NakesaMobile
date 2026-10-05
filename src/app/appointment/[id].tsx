@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { PracticeCard } from '@/components/PracticeCard';
 import { AppText } from '@/components/ui/AppText';
@@ -14,13 +14,14 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ErrorState, LoadingState, NoticeBox } from '@/components/ui/States';
 import { spacing } from '@/constants/theme';
 import { cancelAppointment, getAppointment } from '@/features/appointment/appointment-service';
-import { statusDisplay } from '@/features/appointment/status';
+import { isUpcoming, statusDisplay } from '@/features/appointment/status';
 import { appointmentWhatsApp } from '@/features/appointment/whatsapp';
 import { useAccount } from '@/features/auth/AuthProvider';
 import { titledName } from '@/features/practice/profession';
 import { useAsync } from '@/hooks/useAsync';
 import { friendlyError } from '@/lib/errors';
 import { dateWIB, formatDate, shortTime } from '@/lib/format';
+import { openLink } from '@/lib/links';
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -36,8 +37,12 @@ export default function AppointmentDetailScreen() {
 
   const a = appointment.data;
   const status = statusDisplay(a);
+  const upcoming = isUpcoming(a);
   const time = a.startTime ? `${shortTime(a.startTime)}${a.endTime ? `–${shortTime(a.endTime)}` : ''} WIB` : 'Jam menyusul';
   const wa = appointmentWhatsApp(a, account.fullName, 'saya ingin menanyakan janji temu saya:');
+  // Finished, cancelled or rejected: offer to book at the same practice again.
+  const practice = a.practice;
+  const canBookAgain = !upcoming && !!practice?.booking_enabled;
 
   const cancel = async () => {
     setCancelling(true);
@@ -59,10 +64,22 @@ export default function AppointmentDetailScreen() {
       onRefresh={appointment.refresh}
       refreshing={appointment.refreshing}
       footer={
-        wa || a.canCancel ? (
+        wa || a.canCancel || canBookAgain ? (
           <>
+            {canBookAgain && practice ? (
+              <PrimaryButton
+                title="Buat janji lagi"
+                icon="calendar"
+                onPress={() => router.push({ pathname: '/booking/[practiceId]', params: { practiceId: practice.id } })}
+              />
+            ) : null}
             {wa ? (
-              <PrimaryButton title="Hubungi praktik via WhatsApp" icon="logo-whatsapp" variant="whatsapp" onPress={() => Linking.openURL(wa)} />
+              <PrimaryButton
+                title="Hubungi praktik via WhatsApp"
+                icon="logo-whatsapp"
+                variant={canBookAgain ? 'secondary' : 'whatsapp'}
+                onPress={() => openLink(wa)}
+              />
             ) : null}
             {a.canCancel ? (
               <PrimaryButton title="Batalkan janji temu" icon="close-circle-outline" variant="danger" onPress={() => setAsking(true)} />
@@ -76,6 +93,12 @@ export default function AppointmentDetailScreen() {
       </View>
 
       {message ? <NoticeBox message={message.text} tone={message.tone} /> : null}
+      {upcoming && !a.canCancel ? (
+        <NoticeBox
+          tone="info"
+          message="Janji temu ini sudah tidak bisa dibatalkan lewat aplikasi. Hubungi praktik jika ada perubahan."
+        />
+      ) : null}
 
       <Card style={styles.card}>
         <InfoRow icon="calendar-outline" label="Tanggal">
@@ -101,12 +124,12 @@ export default function AppointmentDetailScreen() {
         ) : null}
       </Card>
 
-      {a.practice ? (
+      {practice ? (
         <View>
           <SectionHeader title="Praktik" />
           <PracticeCard
-            practice={a.practice}
-            onPress={() => router.push({ pathname: '/practice/[id]', params: { id: a.practice!.id } })}
+            practice={practice}
+            onPress={() => router.push({ pathname: '/practice/[id]', params: { id: practice.id } })}
           />
         </View>
       ) : null}

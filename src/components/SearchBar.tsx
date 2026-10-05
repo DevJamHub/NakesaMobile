@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import type { Ref } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { colors, fontSize, radius, shadow } from '@/constants/theme';
@@ -14,9 +15,11 @@ type Props = {
   /** Without onChangeText the bar is a button (e.g. on Home it opens the search tab). */
   onPress?: () => void;
   autoFocus?: boolean;
+  /** To focus the field later, e.g. when Search is opened again from Home. */
+  inputRef?: Ref<TextInput>;
 };
 
-export function SearchBar({ value, onChangeText, onSubmit, onPress, autoFocus }: Props) {
+export function SearchBar({ value, onChangeText, onSubmit, onPress, autoFocus, inputRef }: Props) {
   if (!onChangeText) {
     return (
       <Pressable onPress={onPress} accessibilityRole="search" accessibilityLabel={PLACEHOLDER} style={styles.bar}>
@@ -31,6 +34,7 @@ export function SearchBar({ value, onChangeText, onSubmit, onPress, autoFocus }:
     <View style={styles.bar}>
       <Ionicons name="search" size={20} color={colors.primary} />
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChangeText}
         onSubmitEditing={onSubmit}

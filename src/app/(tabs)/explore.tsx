@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet, View, type TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PracticeCard } from '@/components/PracticeCard';
@@ -22,17 +22,26 @@ const noExtra = (key: string): ExtraPages => ({ key, items: [], done: false, err
 
 export default function ExploreScreen() {
   const account = useAccount();
-  const params = useLocalSearchParams<{ profession?: string; focus?: string }>();
+  // From Home: a category (`profession`, with `at` changing on every tap) or the search bar (`focus`).
+  const params = useLocalSearchParams<{ profession?: string; at?: string; focus?: string }>();
   const [text, setText] = useState('');
   const [query, setQuery] = useState('');
   const [profession, setProfession] = useState<string | null>(params.profession ?? null);
+  const inputRef = useRef<TextInput>(null);
 
   // A category tapped on Home arrives as a route param (also when this tab is already open).
-  const [paramSeen, setParamSeen] = useState(params.profession);
-  if (params.profession !== paramSeen) {
-    setParamSeen(params.profession);
+  // `at` makes every tap new, so the same category applies again after choosing "Semua" here.
+  const categoryTap = `${params.profession ?? ''}@${params.at ?? ''}`;
+  const [tapSeen, setTapSeen] = useState(categoryTap);
+  if (categoryTap !== tapSeen) {
+    setTapSeen(categoryTap);
     if (params.profession) setProfession(params.profession);
   }
+
+  // The search bar on Home opens this tab ready for typing, also when it was open before.
+  useEffect(() => {
+    if (params.focus) inputRef.current?.focus();
+  }, [params.focus]);
 
   // Search shortly after the patient stops typing.
   useEffect(() => {
@@ -81,7 +90,13 @@ export default function ExploreScreen() {
     <SafeAreaView style={styles.flex} edges={['top']}>
       <View style={styles.top}>
         <AppText variant="title">Cari</AppText>
-        <SearchBar value={text} onChangeText={setText} onSubmit={() => setQuery(text.trim())} autoFocus={params.focus === '1'} />
+        <SearchBar
+          value={text}
+          onChangeText={setText}
+          onSubmit={() => setQuery(text.trim())}
+          autoFocus={!!params.focus}
+          inputRef={inputRef}
+        />
       </View>
 
       <View>
