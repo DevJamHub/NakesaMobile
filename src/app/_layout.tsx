@@ -52,6 +52,7 @@ function RootNavigator() {
           <Stack.Screen name="booking/success" options={{ gestureEnabled: false }} />
           <Stack.Screen name="appointment/[id]" options={{ headerShown: true, title: 'Detail Janji Temu' }} />
           <Stack.Screen name="profile/edit" options={{ headerShown: true, title: 'Ubah Profil' }} />
+          <Stack.Screen name="profile/password" options={{ headerShown: true, title: 'Ubah Kata Sandi' }} />
         </Stack.Protected>
 
         {/* Email links (confirmation, password reset) work signed in or not. */}

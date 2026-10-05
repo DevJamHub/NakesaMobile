@@ -1,5 +1,5 @@
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { router } from 'expo-router';
+import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { colors, radius, spacing } from '@/constants/theme';
 import { listAppointments } from '@/features/appointment/appointment-service';
 import { isUpcoming } from '@/features/appointment/status';
 import { useAsync } from '@/hooks/useAsync';
+import { useRevalidateOnFocus } from '@/hooks/useRevalidateOnFocus';
 
 type Tab = 'upcoming' | 'history';
 
@@ -18,16 +19,12 @@ export default function AppointmentsScreen() {
   const appointments = useAsync(listAppointments, 'appointments');
 
   // Refresh when coming back from booking, detail or cancel.
-  const { revalidate } = appointments;
-  useFocusEffect(
-    useCallback(() => {
-      revalidate();
-    }, [revalidate]),
-  );
+  useRevalidateOnFocus(appointments.revalidate);
 
   const all = appointments.data ?? [];
   // Upcoming: soonest first. History: most recent first.
-  const shown = tab === 'upcoming' ? all.filter(isUpcoming) : all.filter((a) => !isUpcoming(a)).reverse();
+  const upcoming = all.filter(isUpcoming);
+  const shown = tab === 'upcoming' ? upcoming : all.filter((a) => !isUpcoming(a)).reverse();
 
   return (
     <SafeAreaView style={styles.flex} edges={['top']}>
@@ -47,7 +44,7 @@ export default function AppointmentsScreen() {
               accessibilityState={{ selected: tab === key }}
               style={[styles.segmentItem, tab === key && styles.segmentActive]}>
               <AppText variant="smallStrong" color={tab === key ? colors.primary : colors.textMuted}>
-                {label}
+                {key === 'upcoming' && upcoming.length ? `${label} (${upcoming.length})` : label}
               </AppText>
             </Pressable>
           ))}

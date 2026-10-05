@@ -4,6 +4,8 @@ import * as Linking from 'expo-linking';
 import { supabase } from '@/lib/supabase';
 import { cleanPhone } from '@/lib/format';
 
+import { parseAuthLink } from './auth-link';
+
 /** Where email links (confirmation, password reset) send the patient back to the app.
  *  Must be allowed in Supabase → Authentication → URL Configuration → Redirect URLs. */
 export const authRedirectUrl = () => Linking.createURL('auth/callback');
@@ -53,6 +55,19 @@ export async function updatePassword(password: string) {
   if (error) throw error;
 }
 
+/** Password change while signed in. The current password is checked first, so someone holding
+ *  the unlocked phone cannot take over the account. */
+export async function changePassword(email: string, currentPassword: string, newPassword: string) {
+  const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: currentPassword });
+  if (error) {
+    if (error.code === 'invalid_credentials') {
+      throw Object.assign(new Error('Wrong current password'), { code: 'wrong_current_password' });
+    }
+    throw error;
+  }
+  await updatePassword(newPassword);
+}
+
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
@@ -65,19 +80,10 @@ export type AuthLinkResult =
 
 /** Reads an email link (…/auth/callback#access_token=…&type=recovery) and starts the session. */
 export async function sessionFromUrl(url: string): Promise<AuthLinkResult> {
-  const [beforeHash, hash = ''] = url.split('#');
-  const query = beforeHash.includes('?') ? beforeHash.slice(beforeHash.indexOf('?') + 1) : '';
-  const params = new URLSearchParams(`${query}&${hash}`);
+  const link = parseAuthLink(url);
+  if (link.kind !== 'session') return link;
 
-  const errorCode = params.get('error_code');
-  const errorDescription = params.get('error_description') ?? params.get('error');
-  if (errorCode || errorDescription) return { kind: 'error', code: errorCode, description: errorDescription };
-
-  const accessToken = params.get('access_token');
-  const refreshToken = params.get('refresh_token');
-  if (!accessToken || !refreshToken) return { kind: 'none' };
-
-  const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+  const { error } = await supabase.auth.setSession({ access_token: link.accessToken, refresh_token: link.refreshToken });
   if (error) throw error;
-  return { kind: 'signed_in', type: params.get('type') };
+  return { kind: 'signed_in', type: link.type };
 }

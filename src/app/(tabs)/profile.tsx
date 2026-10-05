@@ -108,7 +108,10 @@ export default function ProfileScreen() {
         </InfoRow>
       </Card>
 
-      <PrimaryButton title="Ubah profil" icon="create-outline" variant="secondary" onPress={() => router.push('/profile/edit')} />
+      <View style={styles.actions}>
+        <PrimaryButton title="Ubah profil" icon="create-outline" variant="secondary" onPress={() => router.push('/profile/edit')} />
+        <PrimaryButton title="Ubah kata sandi" icon="key-outline" variant="ghost" onPress={() => router.push('/profile/password')} />
+      </View>
 
       <Card style={styles.privacy}>
         <Ionicons name="shield-checkmark-outline" size={22} color={colors.primary} />
@@ -151,6 +154,7 @@ const styles = StyleSheet.create({
     borderColor: colors.background,
   },
   card: { gap: spacing.lg },
+  actions: { gap: spacing.sm },
   privacy: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.primarySoft, borderColor: colors.primarySoft },
   flex: { flex: 1 },
 });

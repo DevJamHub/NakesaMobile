@@ -5,12 +5,8 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
 import { useAccount, useAuth } from '@/features/auth/AuthProvider';
-import {
-  PatientFormFields,
-  formFromAccount,
-  validatePatientForm,
-  type PatientFormErrors,
-} from '@/features/profile/PatientForm';
+import { PatientFormFields } from '@/features/profile/PatientForm';
+import { formFromAccount, validatePatientForm, type PatientFormErrors } from '@/features/profile/patient-form';
 import { updateAccount } from '@/features/profile/profile-service';
 import { friendlyError } from '@/lib/errors';
 

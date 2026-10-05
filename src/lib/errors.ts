@@ -12,6 +12,7 @@ const BY_CODE: Record<string, string> = {
   validation_failed: 'Periksa kembali data yang Anda isi.',
   weak_password: 'Pilih kata sandi yang lebih kuat.',
   same_password: 'Kata sandi baru harus berbeda dari yang lama.',
+  wrong_current_password: 'Kata sandi saat ini salah.',
   over_email_send_rate_limit: 'Terlalu banyak email terkirim. Tunggu sebentar lalu coba lagi.',
   over_request_rate_limit: 'Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.',
   signup_disabled: 'Pendaftaran akun baru sedang ditutup.',

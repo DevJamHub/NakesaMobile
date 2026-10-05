@@ -1,4 +1,4 @@
-// Formatting for Indonesian dates, times, rupiah and WhatsApp links.
+// Formatting for Indonesian dates, times, rupiah, and WhatsApp / phone / map links.
 // Dates are "YYYY-MM-DD" strings in WIB (Asia/Jakarta), like the database.
 
 export const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -77,7 +77,8 @@ export function rupiah(amount: number): string {
 }
 
 /** Price label for a service; null prices are never guessed. */
-export const priceLabel = (price: number | null) => (price === null ? 'Tanya harga ke praktik' : rupiah(price));
+export const priceLabel = (price: number | null) =>
+  price === null ? 'Tanya harga ke praktik' : price === 0 ? 'Gratis' : rupiah(price);
 
 export const durationLabel = (minutes: number) =>
   minutes % 60 === 0 ? `${minutes / 60} jam` : minutes > 60 ? `${Math.floor(minutes / 60)} jam ${minutes % 60} menit` : `${minutes} menit`;
@@ -99,6 +100,29 @@ export function waLink(phone: string, message = ''): string {
   return `https://wa.me/${waNumber(phone)}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 }
 
+/** "0812-3456 789" → "tel:08123456789" (opens the phone app). */
+export const telLink = (phone: string) => `tel:${cleanPhone(phone)}`;
+
+type Place = {
+  address?: string | null;
+  city?: string | null;
+  province?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+};
+
+/** Google Maps link: the exact pin when the place has coordinates, otherwise a search for its
+ *  address (not its name: many small practices are not on Google Maps). Null without an address. */
+export function mapsLink(place: Place): string | null {
+  const { latitude, longitude } = place;
+  const pinned = typeof latitude === 'number' && typeof longitude === 'number';
+  if (!pinned && !place.address && !place.city) return null;
+  const query = pinned
+    ? `${latitude},${longitude}`
+    : [place.address, place.city, place.province].filter(Boolean).join(', ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
 /** Greeting by the time of day on the phone. */
@@ -109,6 +133,9 @@ export function greeting(date = new Date()): string {
   if (hour < 18) return 'Selamat sore';
   return 'Selamat malam';
 }
+
+/** "Budi Santoso" → "Budi" ("" when there is no name). */
+export const firstName = (fullName: string | null | undefined) => (fullName ?? '').trim().split(/\s+/)[0] ?? '';
 
 /** "Budi Santoso" → "BS" */
 export function initials(name: string | null | undefined): string {

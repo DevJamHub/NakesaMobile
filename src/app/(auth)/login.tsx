@@ -8,7 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
 import { TextField } from '@/components/ui/TextField';
 import { colors, spacing } from '@/constants/theme';
-import { signIn } from '@/features/auth/auth-service';
+import { resendConfirmation, signIn } from '@/features/auth/auth-service';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { friendlyError } from '@/lib/errors';
 import { isValidEmail } from '@/lib/format';
@@ -19,9 +19,13 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // The account exists but its email was never confirmed: offer a new confirmation link.
+  const [unconfirmed, setUnconfirmed] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const submit = async () => {
     clearNotice();
+    setUnconfirmed(false);
     if (!isValidEmail(email)) return setError('Format email belum benar.');
     if (!password) return setError('Isi kata sandi Anda.');
     setError(null);
@@ -30,8 +34,21 @@ export default function LoginScreen() {
       await signIn(email, password);
       // The navigator moves to Home (or onboarding) once the account is loaded.
     } catch (e) {
+      setUnconfirmed((e as { code?: string } | null)?.code === 'email_not_confirmed');
       setError(friendlyError(e, 'Gagal masuk. Periksa email dan kata sandi Anda.'));
       setBusy(false);
+    }
+  };
+
+  const resend = async () => {
+    setResending(true);
+    try {
+      await resendConfirmation(email);
+      router.push({ pathname: '/check-email', params: { email: email.trim() } });
+    } catch (e) {
+      setError(friendlyError(e));
+    } finally {
+      setResending(false);
     }
   };
 
@@ -44,6 +61,16 @@ export default function LoginScreen() {
 
       {notice ? <NoticeBox message={notice} tone="info" /> : null}
       {error ? <NoticeBox message={error} /> : null}
+      {unconfirmed ? (
+        <PrimaryButton
+          title="Kirim ulang email konfirmasi"
+          icon="mail-outline"
+          variant="secondary"
+          compact
+          onPress={resend}
+          loading={resending}
+        />
+      ) : null}
 
       <TextField
         label="Email"

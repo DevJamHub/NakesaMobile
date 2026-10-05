@@ -7,17 +7,15 @@ import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
 import { colors, spacing } from '@/constants/theme';
 import { useAccount, useAuth } from '@/features/auth/AuthProvider';
-import {
-  PatientFormFields,
-  formFromAccount,
-  validatePatientForm,
-  type PatientFormErrors,
-} from '@/features/profile/PatientForm';
+import { PatientFormFields } from '@/features/profile/PatientForm';
+import { formFromAccount, validatePatientForm, type PatientFormErrors } from '@/features/profile/patient-form';
 import { updateAccount } from '@/features/profile/profile-service';
 import { friendlyError } from '@/lib/errors';
+import { firstName } from '@/lib/format';
 
 export default function OnboardingScreen() {
   const account = useAccount();
+  const name = firstName(account.fullName);
   const { setAccount } = useAuth();
   const [values, setValues] = useState(() => formFromAccount(account));
   const [errors, setErrors] = useState<PatientFormErrors>({});
@@ -48,7 +46,7 @@ export default function OnboardingScreen() {
         </>
       }>
       <View style={styles.header}>
-        <AppText variant="title">Halo, {account.fullName.split(' ')[0]} 👋</AppText>
+        <AppText variant="title">Halo{name ? `, ${name}` : ''} 👋</AppText>
         <AppText color={colors.textMuted}>
           Lengkapi sedikit data diri supaya praktik lebih mudah melayani Anda. Semua bisa diubah nanti di Profil.
         </AppText>

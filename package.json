@@ -31,7 +31,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --disable-warning=ExperimentalWarning --import ./tests/setup/register.mjs --test \"tests/**/*.test.mjs\""
   },
   "private": true
 }
