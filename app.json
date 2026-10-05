@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "NAKESAPATIENT",
+    "name": "Nakesa Patient",
     "slug": "NAKESAPATIENT",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "nakesapatient",
     "ios": {
       "supportsTablet": true
     },
@@ -19,7 +20,23 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Izinkan $(PRODUCT_NAME) membuka galeri untuk memilih foto profil Anda.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      "expo-font"
+    ]
   }
 }
