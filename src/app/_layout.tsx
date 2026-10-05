@@ -6,13 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { ErrorState, LoadingState } from '@/components/ui/States';
 import { colors, fontSize } from '@/constants/theme';
+import { AppLockProvider } from '@/features/auth/AppLock';
 import { AuthProvider, useAuth } from '@/features/auth/AuthProvider';
 
 export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="dark" />
-      <RootNavigator />
+      <AppLockProvider>
+        <RootNavigator />
+      </AppLockProvider>
     </AuthProvider>
   );
 }

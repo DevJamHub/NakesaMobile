@@ -3,6 +3,9 @@ export const MIN_PASSWORD_LENGTH = 8;
 /** Bookings can be made from today up to this many days ahead (same rule as the database). */
 export const BOOKING_DAYS_AHEAD = 60;
 
+/** With the app lock on, the app asks for Face ID / fingerprint again after this long in the background. */
+export const APP_LOCK_AFTER_MS = 60 * 1000;
+
 /** Indonesian provinces, for the profile form. */
 export const PROVINCES = [
   'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau', 'Jambi', 'Sumatera Selatan',

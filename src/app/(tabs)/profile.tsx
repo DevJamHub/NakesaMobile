@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
 import { Avatar } from '@/components/ui/Avatar';
@@ -12,8 +12,9 @@ import { InfoRow } from '@/components/ui/InfoRow';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Screen } from '@/components/ui/Screen';
 import { NoticeBox } from '@/components/ui/States';
-import { GENDERS } from '@/constants/config';
+import { APP_LOCK_AFTER_MS, GENDERS } from '@/constants/config';
 import { colors, spacing } from '@/constants/theme';
+import { useAppLock } from '@/features/auth/AppLock';
 import { useAccount, useAuth } from '@/features/auth/AuthProvider';
 import { avatarUrl, removeAvatarFile, updateAccount, uploadAvatar } from '@/features/profile/profile-service';
 import { useAsync } from '@/hooks/useAsync';
@@ -29,6 +30,10 @@ export default function ProfileScreen() {
   const [message, setMessage] = useState<{ text: string; tone: 'success' | 'danger' } | null>(null);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const lock = useAppLock();
+  const lockLabel = lock.support?.label ?? 'biometrik';
+  const [lockBusy, setLockBusy] = useState(false);
+  const [lockMessage, setLockMessage] = useState<{ text: string; tone: 'success' | 'danger' } | null>(null);
 
   const avatarPath = account.avatarPath;
   const photo = useAsync(() => (avatarPath ? avatarUrl(avatarPath) : Promise.resolve(null)), avatarPath ?? '');
@@ -59,6 +64,17 @@ export default function ProfileScreen() {
   const doSignOut = async () => {
     setSigningOut(true);
     await signOut();
+  };
+
+  const toggleLock = async (on: boolean) => {
+    setLockMessage(null);
+    setLockBusy(true);
+    const result = await lock.setEnabled(on);
+    setLockBusy(false);
+    if (result.message) setLockMessage({ text: result.message, tone: 'danger' });
+    else if (result.changed) {
+      setLockMessage({ text: on ? `Kunci dengan ${lockLabel} aktif.` : 'Kunci aplikasi dimatikan.', tone: 'success' });
+    }
   };
 
   const years = age(account.birthDate);
@@ -113,6 +129,29 @@ export default function ProfileScreen() {
         <PrimaryButton title="Ubah kata sandi" icon="key-outline" variant="ghost" onPress={() => router.push('/profile/password')} />
       </View>
 
+      {/* Shown when the phone has Face ID / fingerprint set up (or the lock is on and must stay switchable). */}
+      {lock.support?.available || lock.enabled ? (
+        <View style={styles.actions}>
+          <Card style={styles.lockRow}>
+            <Ionicons name={lock.support?.kind === 'face' ? 'scan-outline' : 'finger-print'} size={22} color={colors.primary} />
+            <View style={styles.flex}>
+              <AppText variant="bodyStrong">Kunci dengan {lockLabel}</AppText>
+              <AppText variant="small">
+                Diminta saat aplikasi dibuka atau ditinggal lebih dari {APP_LOCK_AFTER_MS / 60000} menit.
+              </AppText>
+            </View>
+            <Switch
+              value={lock.enabled}
+              onValueChange={toggleLock}
+              disabled={lockBusy}
+              trackColor={{ true: colors.primary, false: colors.border }}
+              accessibilityLabel={`Kunci dengan ${lockLabel}`}
+            />
+          </Card>
+          {lockMessage ? <NoticeBox message={lockMessage.text} tone={lockMessage.tone} /> : null}
+        </View>
+      ) : null}
+
       <Card style={styles.privacy}>
         <Ionicons name="shield-checkmark-outline" size={22} color={colors.primary} />
         <AppText variant="small" style={styles.flex}>
@@ -155,6 +194,7 @@ const styles = StyleSheet.create({
   },
   card: { gap: spacing.lg },
   actions: { gap: spacing.sm },
+  lockRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   privacy: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start', backgroundColor: colors.primarySoft, borderColor: colors.primarySoft },
   flex: { flex: 1 },
 });
