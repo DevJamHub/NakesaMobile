@@ -21,6 +21,9 @@ import { useAsync } from '@/hooks/useAsync';
 import { useRevalidateOnFocus } from '@/hooks/useRevalidateOnFocus';
 import { firstName, greeting } from '@/lib/format';
 
+/** Changes on every tap, so Search reacts even when it is already open with the same params. */
+const tapId = () => String(Date.now());
+
 export default function HomeScreen() {
   const account = useAccount();
   const city = account.city;
@@ -42,10 +45,8 @@ export default function HomeScreen() {
     appointments.refresh();
   };
 
-  // `at` / `focus` change on every tap, so Search reacts even when it is already open.
-  const openSearch = () => router.navigate({ pathname: '/explore', params: { focus: String(Date.now()) } });
-  const openCategory = (profession: string) =>
-    router.navigate({ pathname: '/explore', params: { profession, at: String(Date.now()) } });
+  const openSearch = () => router.navigate({ pathname: '/explore', params: { focus: tapId() } });
+  const openCategory = (profession: string) => router.navigate({ pathname: '/explore', params: { profession, at: tapId() } });
 
   return (
     <Screen edges={['top']} onRefresh={refresh} refreshing={practices.refreshing}>
