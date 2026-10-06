@@ -68,10 +68,15 @@ Skema, fungsi, dan aturan RLS yang dipakai aplikasi dijelaskan di **[`supabase/R
 Yang perlu diatur di project Supabase:
 
 1. **Migration aplikasi pasien** (fungsi `patient_*`, tabel `patient_profiles`, bucket `patient-avatars`,
-   RLS) sudah dijalankan. File migration-nya belum ada di repo ini — lihat peringatan di `supabase/README.md`.
-2. **Redirect URLs** (Authentication → URL Configuration): tambahkan `nakesapatient://**` dan, untuk Expo Go,
-   `exp://**`. Link konfirmasi email, reset kata sandi, dan login Google kembali ke layar `auth/callback` di
-   aplikasi.
+   RLS) ada di repo Nakesa Pro. Jalankan berurutan di SQL Editor:
+   `../NAKESA/supabase/migrations/20261005151705_medicine_inventory.sql`, lalu
+   `../NAKESA/supabase/migrations/20261005170000_patient_app.sql`. Tanpa keduanya, setelah masuk aplikasi
+   berhenti di "Data akun belum bisa dimuat".
+2. **Redirect URLs** (Authentication → URL Configuration): tambahkan `nakesapatient://**`. Link konfirmasi
+   email, reset kata sandi, dan login Google kembali ke layar `auth/callback` di aplikasi. Alamat Expo Go
+   (`exp://192.168.x.x:8081/…`) ditolak Supabase walau ditulis lengkap, jadi login Google selalu kembali ke
+   `nakesapatient://`. Di Expo Go, login Google hanya jalan di iPhone. Login Google di Android dan link dari email
+   perlu development build atau APK.
 3. **Login Google** — urutannya penting:
    1. Jalankan `supabase/migrations/20261005200000_patient_google_sign_in.sql` (SQL Editor atau
       `supabase db push`). Tanpa fungsi ini, akun Google baru tidak mendapat role pasien dan langsung
@@ -155,7 +160,6 @@ Profil `development` membutuhkan `expo-dev-client` (`npx expo install expo-dev-c
 
 - [ ] Tentukan `android.package` dan `ios.bundleIdentifier` di `app.json` (misal `id.nakesa.patient`). Tidak
       bisa diganti setelah aplikasi terbit.
-- [ ] Commit file migration database ke repo (lihat `supabase/README.md`).
 - [ ] Jalankan `supabase/dev/cleanup_demo.sql` di database produksi.
 - [ ] Pasang SMTP sendiri di Supabase (Authentication → Emails). Layanan email bawaan Supabase hanya untuk
       percobaan dan batas kirimnya sangat kecil, padahal pendaftaran butuh email konfirmasi.

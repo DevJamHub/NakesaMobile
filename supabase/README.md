@@ -7,13 +7,12 @@ Dokumen ini adalah **kontrak** antara aplikasi dan database: semua tabel, fungsi
 dipanggil oleh kode di `src/`. Kalau salah satu diubah di database, sesuaikan juga service di
 `src/features/*/…-service.ts` (dan sebaliknya).
 
-> [!WARNING]
-> **File migration belum ada di repo ini.** `dev/seed_demo.sql` menyebut migration
-> `20261005170000_patient_app.sql` (fungsi `patient_*`, tabel `patient_profiles`, bucket `patient-avatars`,
-> RLS), tetapi file itu tidak ikut di-commit. Ambil dari tempat migration itu dijalankan (repo Nakesa Pro atau
-> riwayat migration di Supabase), atau buat ulang dari database dengan `supabase db pull`, lalu simpan di
-> `supabase/migrations/` agar bisa di-review dan dijalankan ulang. Migration yang sudah ada di folder itu
-> (`20261005200000_patient_google_sign_in.sql`) dijalankan **setelah** migration tersebut.
+> [!IMPORTANT]
+> **Migration utama ada di repo Nakesa Pro**, bukan di sini:
+> `../NAKESA/supabase/migrations/20261005170000_patient_app.sql` (fungsi `patient_*`, tabel `patient_profiles`,
+> bucket `patient-avatars`, RLS). Migration itu butuh `20261005151705_medicine_inventory.sql` (tabel
+> `practice_members`) yang dijalankan lebih dulu. Urutan lengkapnya: `20261005151705_medicine_inventory.sql` →
+> `20261005170000_patient_app.sql` → `migrations/20261005200000_patient_google_sign_in.sql` (repo ini).
 
 ## Tabel yang diakses langsung (dilindungi RLS)
 
@@ -72,9 +71,11 @@ signed URL (1 jam). Policy: pasien hanya boleh `insert`, `select`, dan `delete` 
   `profiles` dengan role **`PATIENT`** untuk metadata itu (role tidak pernah dikirim dari aplikasi).
 - Akun dengan role selain `PATIENT` (mis. tenaga kesehatan) dikeluarkan lagi oleh aplikasi dengan pesan;
   fungsi `patient_*` juga menolak role lain.
-- **Redirect URLs** (Authentication → URL Configuration) harus berisi `nakesapatient://**` untuk build dan
-  `exp://**` untuk Expo Go, karena link konfirmasi, reset kata sandi, dan login Google kembali ke
-  `…/auth/callback`.
+- **Redirect URLs** (Authentication → URL Configuration) harus berisi `nakesapatient://**`, karena link
+  konfirmasi, reset kata sandi, dan login Google kembali ke `…/auth/callback`. Alamat Expo Go yang memakai IP
+  (`exp://192.168.x.x:8081/…`) tidak diterima, baik dengan `exp://**` maupun ditulis lengkap. Karena itu login
+  Google selalu memakai `nakesapatient://auth/callback`; di iPhone, sesi browser login menangkapnya sendiri, jadi
+  tetap jalan di Expo Go.
 
 ### Login Google
 
