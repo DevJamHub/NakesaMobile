@@ -1,5 +1,6 @@
 // Where email links land: account confirmation and password reset.
 // The link carries the session in the URL (…/auth/callback#access_token=…&type=…).
+// On Android the Google sign-in redirect lands here too; it shares the result of the Google button.
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -13,11 +14,16 @@ import { friendlyError, messageForCode } from '@/lib/errors';
 
 type Status = { kind: 'working' } | { kind: 'done' } | { kind: 'failed'; message: string };
 
+/** How long to wait for the link before giving up, instead of loading forever. */
+const LINK_WAIT_MS = 10_000;
+
 export default function AuthCallbackScreen() {
   const url = Linking.useLinkingURL();
-  const { loading, account } = useAuth();
+  const { loading, session, account } = useAuth();
   const [status, setStatus] = useState<Status>({ kind: 'working' });
   const handled = useRef<string | null>(null);
+  // Signed in although no link reached this screen, e.g. by the Google button itself.
+  const done = status.kind === 'done' || (status.kind === 'working' && !url && !!session);
 
   useEffect(() => {
     if (!url || handled.current === url) return;
@@ -40,12 +46,22 @@ export default function AuthCallbackScreen() {
       .catch((e) => setStatus({ kind: 'failed', message: friendlyError(e) }));
   }, [url]);
 
-  // Email confirmed: continue once the account is loaded.
+  // No link and not signed in: stop waiting after a while.
   useEffect(() => {
-    if (status.kind !== 'done' || loading) return;
+    if (url || session || status.kind !== 'working') return;
+    const timer = setTimeout(
+      () => setStatus({ kind: 'failed', message: 'Link tidak terbaca. Silakan coba masuk lagi.' }),
+      LINK_WAIT_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [url, session, status.kind]);
+
+  // Signed in: continue once the account is loaded.
+  useEffect(() => {
+    if (!done || loading) return;
     if (!account) router.replace('/login');
     else router.replace(account.onboardedAt ? '/' : '/onboarding');
-  }, [status, loading, account]);
+  }, [done, loading, account]);
 
   if (status.kind === 'failed') {
     return (

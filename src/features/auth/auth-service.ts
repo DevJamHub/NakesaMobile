@@ -1,6 +1,7 @@
 // Authentication: the only file that calls Supabase Auth.
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
 import { cleanPhone } from '@/lib/format';
@@ -10,6 +11,12 @@ import { parseAuthLink } from './auth-link';
 /** Where email links (confirmation, password reset) send the patient back to the app.
  *  Must be allowed in Supabase → Authentication → URL Configuration → Redirect URLs. */
 export const authRedirectUrl = () => Linking.createURL('auth/callback');
+
+/** Where Google sign-in returns to: always the app's own scheme (app.json → expo.scheme). Supabase
+ *  accepts nakesapatient://** but refuses Expo Go's exp://<IP>:<port> address, even listed exactly.
+ *  On iPhone the browser session catches this link itself, so it works in Expo Go too; on Android
+ *  the phone must know the scheme, so Google sign-in needs a development build or the APK there. */
+const GOOGLE_REDIRECT_URL = 'nakesapatient://auth/callback';
 
 export type SignUpInput = { fullName: string; email: string; password: string; phone: string };
 
@@ -52,7 +59,7 @@ export async function signIn(email: string, password: string) {
  * closes the browser.
  */
 export async function signInWithGoogle(): Promise<boolean> {
-  const redirectTo = authRedirectUrl();
+  const redirectTo = GOOGLE_REDIRECT_URL;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     // Let the patient pick the account, e.g. on a phone shared with family.
@@ -69,6 +76,17 @@ export async function signInWithGoogle(): Promise<boolean> {
   }
   if (link.kind === 'none') throw new Error('Google sign-in returned no session');
   return true;
+}
+
+let warmUsers = 0;
+
+/** Android: starts the browser in the background so Google sign-in opens faster. Returns the clean-up. */
+export function warmUpBrowser(): () => void {
+  if (Platform.OS !== 'android') return () => {};
+  if (warmUsers++ === 0) WebBrowser.warmUpAsync().catch(() => {});
+  return () => {
+    if (--warmUsers === 0) WebBrowser.coolDownAsync().catch(() => {});
+  };
 }
 
 /** Whether the signed-in account was created by Google sign-in rather than with email. */
@@ -111,8 +129,9 @@ export async function changePassword(email: string, currentPassword: string, new
   await updatePassword(newPassword);
 }
 
+/** Signs out on this phone only: the same account may also be signed in elsewhere, e.g. in Nakesa Pro. */
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: 'local' });
   if (error) throw error;
 }
 
@@ -121,8 +140,23 @@ export type AuthLinkResult =
   | { kind: 'error'; code: string | null; description: string | null }
   | { kind: 'none' };
 
+/** The link read last. On Android the Google redirect also opens auth/callback with the same link;
+ *  both then share one result, so the session is not set up twice. */
+let lastLink: { url: string; result: Promise<AuthLinkResult> } | null = null;
+
 /** Reads an email link (…/auth/callback#access_token=…&type=recovery) and starts the session. */
-export async function sessionFromUrl(url: string): Promise<AuthLinkResult> {
+export function sessionFromUrl(url: string): Promise<AuthLinkResult> {
+  if (lastLink?.url === url) return lastLink.result;
+  const result = startSession(url);
+  lastLink = { url, result };
+  // A failed attempt (e.g. offline) may be tried again with the same link.
+  result.catch(() => {
+    if (lastLink?.result === result) lastLink = null;
+  });
+  return result;
+}
+
+async function startSession(url: string): Promise<AuthLinkResult> {
   const link = parseAuthLink(url);
   if (link.kind !== 'session') return link;
 
