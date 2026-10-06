@@ -83,8 +83,14 @@ export async function updateAccount(userId: string, changes: AccountChanges): Pr
   if (changes.onboarded) patient.onboarded_at = new Date().toISOString();
 
   if (Object.keys(patient).length > 0) {
-    const { error } = await supabase.from('patient_profiles').upsert({ id: userId, ...patient });
-    if (error) throw error;
+    // Not an upsert: it also sets `id`, which patients may not update, so the database refuses it.
+    const updated = await supabase.from('patient_profiles').update(patient).eq('id', userId).select('id');
+    if (updated.error) throw updated.error;
+    if (updated.data.length === 0) {
+      // No row yet, e.g. a Google account saving for the first time.
+      const { error } = await supabase.from('patient_profiles').insert({ id: userId, ...patient });
+      if (error) throw error;
+    }
   }
 
   const account = await fetchAccount(userId, 1);
