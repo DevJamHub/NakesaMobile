@@ -1,0 +1,1 @@
+export { praktikStyles } from "./praktik";
