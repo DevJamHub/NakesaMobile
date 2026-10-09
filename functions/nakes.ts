@@ -1,16 +1,14 @@
 import { nakeses } from "@/constants";
+import type { Nakes } from "@/types";
 
-export function getNakes(idNakes: number): string {
-    const nakes = nakeses.find(
+export function getNakes(idNakes: number): Nakes | undefined {
+    return nakeses.find(
         (item) => item.idNakes === idNakes
     ); // [1]
-
-    return nakes?.namaNakes ?? "Tidak ditemukan"; // [2]
 }
 
 /* ======================== EXPLANATION ========================
-[1]: Ini kita mengambil namaNakes berdasarkan id. find() adalah function bawaan array yang
-mengembalikan item pertama yang cocok, atau undefined kalau tidak ada yang cocok.
-[2]: object?.prop adalah optional chaining. Artinya: Ambil props dari object, tetapi hanya jika object tidak null atau undefined.
-Sementara ?? artinya kembalikan opsi dikanan jika object.prop tidak ada, jika ada ambil yang dikiri.
+[1]: find() adalah function bawaan array yang mengembalikan item pertama yang id-nya cocok.
+Kalau tidak ada yang cocok, hasilnya undefined. Karena itu return type-nya Nakes | undefined (union type).
+Yang memanggil function ini memakai ?. dan ??, contoh: getNakes(1)?.namaNakes ?? "Tidak ditemukan".
 =================================================================*/
