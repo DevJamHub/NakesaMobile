@@ -10,17 +10,20 @@ Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa 
 
 ## Urutan kerja
 
-**Langkah 1: Fondasi.** Bagian ini kecil, jadi merge ke `main` secepatnya. Sigit merge duluan karena yang lain memakai warnanya.
+**Langkah 1: Fondasi.** Bagian ini kecil, jadi merge ke `main` secepatnya. Sigit merge duluan karena Bayhaqy memakai warna, data, dan `Avatar`-nya.
 
 | Orang | Yang dibuat |
 |---|---|
-| Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `app/_layout.tsx`, serta `app/janji-temu.tsx` dan `app/profil.tsx` yang isinya baru judul |
+| Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `components/Avatar.tsx`, `app/_layout.tsx`, serta `app/janji-temu.tsx` dan `app/profil.tsx` yang isinya baru judul |
 | Bayhaqy | `components/Badge.tsx`, `components/SectionHeader.tsx`, `components/EmptyState.tsx`, `functions/tanggal.ts` |
-| Aditya | `components/Avatar.tsx`, `components/Tombol.tsx`, `components/InfoRow.tsx` |
+
+Aditya tidak punya bagian fondasi, supaya tidak ada yang menunggu dia. Sebagai gantinya, dia membuat component `InfoRow` dan `Tombol` di dalam tugas halaman Profil.
 
 **Langkah 2: Halaman masing-masing.** Ketiganya bekerja bersamaan di branch sendiri.
 
-**Langkah 3: Penyatuan.** Setelah halaman Bayhaqy dan Aditya di-merge, Sigit menambahkan "Janji temu berikutnya" dan nama pasien di sapaan Beranda.
+**Langkah 3: Penyatuan.** Setelah halaman Bayhaqy di-merge, Sigit menambahkan "Janji temu berikutnya" di Beranda.
+
+Halaman Profil (Aditya) tidak dipakai halaman lain. Kalau belum selesai, tab Profil tetap menampilkan judulnya, jadi app tetap jalan dan bisa didemokan.
 
 ## Fondasi bersama
 
@@ -61,9 +64,7 @@ type Praktik = {
 | `Badge` | `label: string`, `tone: Tone`, `titik?: boolean` | Bayhaqy |
 | `SectionHeader` | `judul: string`, `aksi?: string`, `onAksi?: () => void` | Bayhaqy |
 | `EmptyState` | `judul: string`, `pesan?: string`, `ikon?: NamaIkon` | Bayhaqy |
-| `Avatar` | `ukuran: number`, `foto?: string`, `nama?: string`, `emoji?: string`, `warna?: string` | Aditya |
-| `Tombol` | `judul: string`, `onPress: () => void`, `jenis?: "utama" \| "kedua" \| "polos" \| "bahaya" \| "whatsapp"`, `ikon?: NamaIkon`, `kecil?: boolean` | Aditya |
-| `InfoRow` | `ikon: NamaIkon`, `label?: string`, `nilai: string` | Aditya |
+| `Avatar` | `ukuran: number`, `foto?: string`, `nama?: string`, `emoji?: string`, `warnaAvatar?: string` | Sigit |
 
 Bentuk tiap komponen ada di STANDAR bagian 5.
 
@@ -71,7 +72,7 @@ Bentuk tiap komponen ada di STANDAR bagian 5.
 
 | File | Function | Pemilik |
 |---|---|---|
-| `functions/format.ts` | `formatRupiah` (sudah ada), `sapaan`, `namaDepan`, `namaBergelar`, `subjudulPraktik`, `alamatPraktik` | Sigit |
+| `functions/format.ts` | `formatRupiah` (sudah ada), `getInisial` (dipakai `Avatar`), `sapaan`, `namaDepan`, `namaBergelar`, `subjudulPraktik`, `alamatPraktik` | Sigit |
 | `functions/tanggal.ts` | `tanggalHariIni` (`"YYYY-MM-DD"`), `formatTanggal`, `tanggalRamah`, `formatJam` | Bayhaqy |
 
 Hasil tiap function harus sama dengan STANDAR bagian 10.
@@ -81,7 +82,7 @@ Hasil tiap function harus sama dengan STANDAR bagian 10.
 ## Sigit: Beranda
 
 **Tampilan, urut dari atas**
-1. Sapaan (title): `Selamat pagi, Budi 👋`, di bawahnya `Apa yang Anda butuhkan hari ini?` (textMuted). Nama diambil dari data pasien Aditya pada langkah 3.
+1. Sapaan (title) tanpa nama: `Selamat pagi 👋`, di bawahnya `Apa yang Anda butuhkan hari ini?` (textMuted). App lama juga menampilkan sapaan seperti ini kalau nama belum diisi.
 2. Kolom cari pakai `TextInput`. Belum bisa menyaring.
 3. Section `Kategori`: 9 kartu profesi, 4 per baris. Kalau ditekan, muncul `Alert` berisi nama profesi.
 4. Section `Janji temu berikutnya` dengan aksi `Lihat semua`: satu `JanjiTemuCard` dari `getJanjiBerikutnya()`. Section ini hanya tampil kalau ada janji yang akan datang (langkah 3).
@@ -141,11 +142,15 @@ Isi 6 janji:
 
 ## Aditya: Profil
 
+Halaman ini lengkap dan bisa didemokan sendiri. Bedanya hanya satu: tidak ada halaman lain yang menunggu Profil, jadi Aditya bisa mengerjakannya dengan tempo sendiri tanpa menghambat Sigit dan Bayhaqy.
+
 **Tampilan, urut dari atas**
 1. Judul `Profil` (title).
-2. `Avatar` ukuran 96 di tengah: foto kalau ada, kalau tidak inisial (`BS`).
+2. `Avatar` ukuran 96 di tengah. Component ini buatan Sigit, tinggal dipakai. Karena foto kosong, yang tampil inisial `BS`.
 3. Nama (h2) dan email (small), rata tengah.
-4. Card berisi `InfoRow`: `Nomor HP`, `Tanggal lahir` (`Kamis, 17 Mei 1990 (36 tahun)`), `Jenis kelamin`, `Alamat`, dan `Kota/Kabupaten, Provinsi`. Data yang kosong ditulis `Belum diisi`.
+4. Card berisi `InfoRow`: `Nomor HP`, `Tanggal lahir`, `Jenis kelamin`, `Alamat`, dan `Kota/Kabupaten, Provinsi`.
+   - Tanggal lahir ditulis dengan umurnya, contoh `Kamis, 17 Mei 1990 (36 tahun)`, pakai `formatTanggal` dari Bayhaqy dan `hitungUmur`.
+   - Data yang kosong ditulis `Belum diisi`.
 5. Tombol `Ubah profil` (kedua, `create-outline`) dan `Ubah kata sandi` (polos, `key-outline`). Keduanya memunculkan `Alert`.
 6. Card kunci aplikasi: ikon `finger-print`, `Kunci dengan sidik jari` (bodyStrong), lalu `Diminta saat aplikasi dibuka atau ditinggal lebih dari 1 menit.` (small). Kalau ditekan, muncul `Alert`.
 7. Card privasi: ikon `shield-checkmark-outline`, lalu teks (small) `Data Anda hanya bisa dilihat oleh Anda. Praktik hanya menerima nama dan nomor HP Anda saat Anda membuat janji temu.`
@@ -172,16 +177,16 @@ type InfoProfil = { ikon: NamaIkon; label: string; nilai: string };
 Isi 1 pasien bernama `Budi Santoso`, dengan `alamat` dan `foto` sengaja dikosongkan supaya `Belum diisi` dan inisial ikut tampil.
 
 **File**
-- [ ] Fondasi (langkah 1)
 - [ ] `types/pasien.ts`, `constants/pasien.ts`
 - [ ] `functions/profil.ts`:
-  - `getInisial(nama)` pakai loop `for`
-  - `hitungUmur(tanggalLahir)`
+  - `hitungUmur(tanggalLahir)`: umur dalam tahun, pakai `if` untuk mengecek apakah ulang tahun tahun ini sudah lewat
   - `buatInfoProfil(pasien)`: menghasilkan array `InfoProfil` dan mengisi `Belum diisi` kalau datanya kosong
   - `konfirmasiKeluar()`: `Alert` dengan dua tombol, memakai callback `onPress`
+- [ ] `components/InfoRow.tsx`, dengan props `ikon: NamaIkon`, `label?: string`, `nilai: string`
+- [ ] `components/Tombol.tsx`, dengan props `judul: string`, `onPress: () => void`, `jenis?: "utama" | "kedua" | "polos" | "bahaya"`, `ikon?: NamaIkon`. Warna tiap jenis dipilih pakai `switch`, bentuknya ada di STANDAR bagian 5.
 - [ ] `styles/profil.ts`
 
-**Materi Modul 1 yang harus kelihatan:** `interface`, `readonly`, field opsional `?`, union type, loop `for`, `map` (baris info), ternary (foto atau inisial), `Image`, `Alert` dengan callback, inline style, external style.
+**Materi Modul 1 yang harus kelihatan:** `interface`, `readonly`, field opsional `?`, union type, `if` dan `switch`, `map` (baris info), `??` atau ternary untuk `Belum diisi`, `Alert` dengan callback, inline style, external style.
 
 ---
 

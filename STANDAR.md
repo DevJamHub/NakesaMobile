@@ -123,7 +123,7 @@ Ikon yang dipakai app lama: `search`, `location-outline`, `calendar-outline`, `t
 
 | Tempat | Teks |
 |---|---|
-| Sapaan Beranda | `Selamat pagi, Budi 👋` lalu `Apa yang Anda butuhkan hari ini?` (textMuted) |
+| Sapaan Beranda | `Selamat pagi, Budi 👋` (tanpa nama: `Selamat pagi 👋`) lalu `Apa yang Anda butuhkan hari ini?` (textMuted) |
 | Judul section Beranda | `Kategori`, `Janji temu berikutnya` (aksi `Lihat semua`), `Praktik untuk Anda` |
 | Bagian Janji Temu | `Akan Datang (2)`, `Riwayat` |
 | Tampilan kosong | `Belum ada praktik`, `Belum ada janji temu`, `Belum ada riwayat` |
