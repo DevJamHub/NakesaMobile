@@ -1,16 +1,14 @@
 import { profesis } from "@/constants";
+import type { Profesi } from "@/types";
 
-export function getProfesi(idProfesi: number): string {
-    const profesi = profesis.find(
+export function getProfesi(idProfesi: number): Profesi | undefined {
+    return profesis.find(
         (item) => item.idProfesi === idProfesi
     ); // [1]
-
-    return profesi?.namaProfesi ?? "Tidak ditemukan"; // [2]
 }
 
 /* ======================== EXPLANATION ========================
-[1]: Ini kita mengambil namaProfesi berdasarkan id. find() adalah function bawaan array yang
-mengembalikan item pertama yang cocok, atau undefined kalau tidak ada yang cocok.
-[2]: object?.prop adalah optional chaining. Artinya: Ambil props dari object, tetapi hanya jika object tidak null atau undefined.
-Sementara ?? artinya kembalikan opsi dikanan jika object.prop tidak ada, jika ada ambil yang dikiri.
+[1]: find() adalah function bawaan array yang mengembalikan item pertama yang id-nya cocok.
+Kalau tidak ada yang cocok, hasilnya undefined. Karena itu return type-nya Profesi | undefined (union type).
+Yang memanggil function ini memakai ?. dan ??, contoh: getProfesi(1)?.namaProfesi ?? "Tidak ditemukan".
 =================================================================*/
