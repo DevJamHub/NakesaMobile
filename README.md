@@ -22,3 +22,5 @@ functions/    custom function
 styles/       external styling (StyleSheet)
 types/        type data
 ```
+
+Sebelum mulai, baca [TUGAS.md](TUGAS.md) (tugas tiap orang), [ATURAN.md](ATURAN.md) (cara kerja), dan [STANDAR.md](STANDAR.md) (tampilan dan function).
