@@ -5,6 +5,7 @@
         3.1: Kolom Aplikasi
         3.2: Pengaturan Tab Bawah
         3.3: Tab Beranda
+        3.4: Tab Janji Temu
 ========================================================= */
 
 // 1.1: Import Section
@@ -42,6 +43,17 @@ export default function RootLayout() {
                         ), // [4]
                     }}
                 />
+
+                {/* 3.4: Tab Janji Temu */}
+                <Tabs.Screen
+                    name="janji-temu"
+                    options={{
+                        title: "Janji Temu",
+                        tabBarIcon: ({ color, size, focused }) => (
+                            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={size} color={color} />
+                        ),
+                    }}
+                />
             </Tabs>
         </View>
     </View>
@@ -53,9 +65,10 @@ export default function RootLayout() {
 jadi tidak ada yang berubah. Di browser laptop, aplikasi tampil seperti layar HP di tengah,
 tidak melebar sampai ujung. Ini berlaku untuk semua halaman.
 [2]: Header bawaan disembunyikan karena setiap halaman menulis judulnya sendiri, sama seperti app lama.
-[3]: name harus sama dengan nama file di folder app/: "index" untuk app/index.tsx.
-Tab Janji Temu dan Profil ditambahkan dengan bentuk yang sama oleh pemilik halamannya
-(lihat STANDAR.md bagian 4 untuk judul dan ikonnya).
+[3]: name harus sama dengan nama file di folder app/: "index" untuk app/index.tsx dan "janji-temu"
+untuk app/janji-temu.tsx. Setiap halaman baru wajib didaftarkan di sini. Kalau tidak, tab-nya tetap muncul
+tapi dengan nama file dan ikon segitiga. Tab Profil ditambahkan dengan bentuk yang sama
+(judul "Profil", ikon person / person-outline, lihat STANDAR.md bagian 4).
 [4]: tabBarIcon menerima function (callback) yang dipanggil oleh Tabs. Tabs mengirim color, size,
 dan focused (true kalau tab sedang dibuka). Dengan ternary, ikon penuh dipakai saat tab aktif
 dan ikon outline saat tidak aktif.
