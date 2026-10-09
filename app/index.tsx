@@ -16,10 +16,10 @@
 // 1.1: Import Section
 import { KategoriCard, PraktikCard, SearchBar } from "@/components";
 import { praktiks, profesis } from "@/constants";
-import { alamatPraktik, sapaan } from "@/functions";
+import { alamatPraktik, sapaan, tampilkanPesan } from "@/functions";
 import { berandaStyles } from "@/styles";
 import type { Praktik, Profesi } from "@/types";
-import { Alert, FlatList, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // 1.2: Default Function
@@ -27,11 +27,11 @@ export default function Beranda() {
 
     // 2.1: Function Saat Ditekan
     const pilihKategori = (profesi: Profesi) => {
-        Alert.alert(profesi.namaProfesi);
+        tampilkanPesan(profesi.namaProfesi);
     }; // [1]
 
     const pilihPraktik = (praktik: Praktik) => {
-        Alert.alert(praktik.namaPraktik, alamatPraktik(praktik.alamat, praktik.kota));
+        tampilkanPesan(praktik.namaPraktik, alamatPraktik(praktik.alamat, praktik.kota));
     };
 
     // 2.2: Bagian Atas Halaman
@@ -82,8 +82,8 @@ export default function Beranda() {
 }
 
 /* ======================== EXPLANATION ========================
-[1]: Arrow function yang disimpan di variabel. Isinya memanggil Alert.alert(), function bawaan
-React Native untuk memunculkan pop-up. Function ini baru dijalankan saat kartu ditekan.
+[1]: Arrow function yang disimpan di variabel. Isinya memanggil tampilkanPesan() dari @/functions,
+yang memunculkan pop-up di HP maupun di browser. Function ini baru dijalankan saat kartu ditekan.
 [2]: JSX juga bisa disimpan di variabel. bagianAtas berisi semua yang ada di atas daftar praktik,
 lalu diberikan ke FlatList lewat ListHeaderComponent (lihat [6]).
 [3]: sapaan() dari @/functions memilih "Selamat pagi/siang/sore/malam" sesuai jam di HP.
