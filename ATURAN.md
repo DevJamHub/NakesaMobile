@@ -9,8 +9,8 @@ Satu orang pegang satu halaman. Jangan ubah halaman atau file milik teman tanpa 
 | Halaman | File | Pemegang |
 |---|---|---|
 | Beranda | `app/index.tsx` | Sigit |
-| Janji Temu | `app/janji-temu.tsx` | _(isi nama)_ |
-| Profil | `app/profil.tsx` | _(isi nama)_ |
+| Janji Temu | `app/janji-temu.tsx` | Bayhaqy |
+| Profil | `app/profil.tsx` | Aditya |
 
 `app/_layout.tsx` (tab bawah) dipegang Sigit. Rincian tugas, urutan kerja, dan file milik tiap orang ada di [TUGAS.md](TUGAS.md).
 

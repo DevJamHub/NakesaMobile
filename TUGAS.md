@@ -5,8 +5,8 @@ Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa 
 | Orang | Halaman |
 |---|---|
 | Sigit | Beranda (`app/index.tsx`) |
-| Teman 1 _(isi nama)_ | Janji Temu (`app/janji-temu.tsx`) |
-| Teman 2 _(isi nama)_ | Profil (`app/profil.tsx`) |
+| Bayhaqy | Janji Temu (`app/janji-temu.tsx`) |
+| Aditya | Profil (`app/profil.tsx`) |
 
 ## Urutan kerja
 
@@ -15,12 +15,12 @@ Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa 
 | Orang | Yang dibuat |
 |---|---|
 | Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `app/_layout.tsx`, serta `app/janji-temu.tsx` dan `app/profil.tsx` yang isinya baru judul |
-| Teman 1 | `components/Badge.tsx`, `components/SectionHeader.tsx`, `components/EmptyState.tsx`, `functions/tanggal.ts` |
-| Teman 2 | `components/Avatar.tsx`, `components/Tombol.tsx`, `components/InfoRow.tsx` |
+| Bayhaqy | `components/Badge.tsx`, `components/SectionHeader.tsx`, `components/EmptyState.tsx`, `functions/tanggal.ts` |
+| Aditya | `components/Avatar.tsx`, `components/Tombol.tsx`, `components/InfoRow.tsx` |
 
 **Langkah 2: Halaman masing-masing.** Ketiganya bekerja bersamaan di branch sendiri.
 
-**Langkah 3: Penyatuan.** Setelah halaman Teman 1 dan Teman 2 di-merge, Sigit menambahkan "Janji temu berikutnya" dan nama pasien di sapaan Beranda.
+**Langkah 3: Penyatuan.** Setelah halaman Bayhaqy dan Aditya di-merge, Sigit menambahkan "Janji temu berikutnya" dan nama pasien di sapaan Beranda.
 
 ## Fondasi bersama
 
@@ -58,12 +58,12 @@ type Praktik = {
 
 | Komponen | Props | Pembuat |
 |---|---|---|
-| `Badge` | `label: string`, `tone: Tone`, `titik?: boolean` | Teman 1 |
-| `SectionHeader` | `judul: string`, `aksi?: string`, `onAksi?: () => void` | Teman 1 |
-| `EmptyState` | `judul: string`, `pesan?: string`, `ikon?: NamaIkon` | Teman 1 |
-| `Avatar` | `ukuran: number`, `foto?: string`, `nama?: string`, `emoji?: string`, `warna?: string` | Teman 2 |
-| `Tombol` | `judul: string`, `onPress: () => void`, `jenis?: "utama" \| "kedua" \| "polos" \| "bahaya" \| "whatsapp"`, `ikon?: NamaIkon`, `kecil?: boolean` | Teman 2 |
-| `InfoRow` | `ikon: NamaIkon`, `label?: string`, `nilai: string` | Teman 2 |
+| `Badge` | `label: string`, `tone: Tone`, `titik?: boolean` | Bayhaqy |
+| `SectionHeader` | `judul: string`, `aksi?: string`, `onAksi?: () => void` | Bayhaqy |
+| `EmptyState` | `judul: string`, `pesan?: string`, `ikon?: NamaIkon` | Bayhaqy |
+| `Avatar` | `ukuran: number`, `foto?: string`, `nama?: string`, `emoji?: string`, `warna?: string` | Aditya |
+| `Tombol` | `judul: string`, `onPress: () => void`, `jenis?: "utama" \| "kedua" \| "polos" \| "bahaya" \| "whatsapp"`, `ikon?: NamaIkon`, `kecil?: boolean` | Aditya |
+| `InfoRow` | `ikon: NamaIkon`, `label?: string`, `nilai: string` | Aditya |
 
 Bentuk tiap komponen ada di STANDAR bagian 5.
 
@@ -72,7 +72,7 @@ Bentuk tiap komponen ada di STANDAR bagian 5.
 | File | Function | Pemilik |
 |---|---|---|
 | `functions/format.ts` | `formatRupiah` (sudah ada), `sapaan`, `namaDepan`, `namaBergelar`, `subjudulPraktik`, `alamatPraktik` | Sigit |
-| `functions/tanggal.ts` | `tanggalHariIni` (`"YYYY-MM-DD"`), `formatTanggal`, `tanggalRamah`, `formatJam` | Teman 1 |
+| `functions/tanggal.ts` | `tanggalHariIni` (`"YYYY-MM-DD"`), `formatTanggal`, `tanggalRamah`, `formatJam` | Bayhaqy |
 
 Hasil tiap function harus sama dengan STANDAR bagian 10.
 
@@ -81,7 +81,7 @@ Hasil tiap function harus sama dengan STANDAR bagian 10.
 ## Sigit: Beranda
 
 **Tampilan, urut dari atas**
-1. Sapaan (title): `Selamat pagi, Budi 👋`, di bawahnya `Apa yang Anda butuhkan hari ini?` (textMuted). Nama diambil dari data pasien Teman 2 pada langkah 3.
+1. Sapaan (title): `Selamat pagi, Budi 👋`, di bawahnya `Apa yang Anda butuhkan hari ini?` (textMuted). Nama diambil dari data pasien Aditya pada langkah 3.
 2. Kolom cari pakai `TextInput`. Belum bisa menyaring.
 3. Section `Kategori`: 9 kartu profesi, 4 per baris. Kalau ditekan, muncul `Alert` berisi nama profesi.
 4. Section `Janji temu berikutnya` dengan aksi `Lihat semua`: satu `JanjiTemuCard` dari `getJanjiBerikutnya()`. Section ini hanya tampil kalau ada janji yang akan datang (langkah 3).
@@ -97,7 +97,7 @@ Hasil tiap function harus sama dengan STANDAR bagian 10.
 
 ---
 
-## Teman 1: Janji Temu
+## Bayhaqy: Janji Temu
 
 **Tampilan, urut dari atas**
 1. Judul `Janji Temu` (title).
@@ -139,7 +139,7 @@ Isi 6 janji:
 
 ---
 
-## Teman 2: Profil
+## Aditya: Profil
 
 **Tampilan, urut dari atas**
 1. Judul `Profil` (title).
