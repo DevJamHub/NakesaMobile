@@ -1,6 +1,5 @@
 export { getProfesi } from "./profesi";
 export { getNakes } from "./nakes";
 export { getLayanan } from "./layanan";
-export { getLokasi } from "./lokasi";
-export { formatRupiah } from "./format";
-export { buatJanji } from "./janji";
+export { getPraktik } from "./praktik";
+export { alamatPraktik, formatRupiah, getInisial, namaBergelar, namaDepan, sapaan, subjudulPraktik } from "./format";

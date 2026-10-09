@@ -14,16 +14,16 @@ Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa 
 
 | Orang | Yang dibuat |
 |---|---|
-| Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `components/Avatar.tsx`, `app/_layout.tsx`, serta `app/janji-temu.tsx` dan `app/profil.tsx` yang isinya baru judul |
+| Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `components/Avatar.tsx`, `app/_layout.tsx` (tab bawah, baru berisi tab Beranda) |
 | Bayhaqy | `components/Badge.tsx`, `components/SectionHeader.tsx`, `components/EmptyState.tsx`, `functions/tanggal.ts` |
 
 Aditya tidak punya bagian fondasi, supaya tidak ada yang menunggu dia. Sebagai gantinya, dia membuat component `InfoRow` dan `Tombol` di dalam tugas halaman Profil.
 
-**Langkah 2: Halaman masing-masing.** Ketiganya bekerja bersamaan di branch sendiri.
+**Langkah 2: Halaman masing-masing.** Ketiganya bekerja bersamaan di branch sendiri. Bayhaqy dan Aditya membuat file halamannya sendiri dan menambahkan tabnya di `app/_layout.tsx` (judul dan ikon ada di STANDAR bagian 4).
 
 **Langkah 3: Penyatuan.** Setelah halaman Bayhaqy di-merge, Sigit menambahkan "Janji temu berikutnya" di Beranda.
 
-Halaman Profil (Aditya) tidak dipakai halaman lain. Kalau belum selesai, tab Profil tetap menampilkan judulnya, jadi app tetap jalan dan bisa didemokan.
+Halaman Profil (Aditya) tidak dipakai halaman lain. Kalau belum selesai, tab Profil belum muncul, tapi app tetap jalan dan bisa didemokan.
 
 ## Fondasi bersama
 
