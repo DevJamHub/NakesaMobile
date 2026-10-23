@@ -64,12 +64,12 @@ Font bawaan HP, jangan pakai `fontFamily`.
 | `janji-temu` | Janji Temu | `calendar` / `calendar-outline` |
 | `profil` | Profil | `person` / `person-outline` |
 
-Header Stack (mulai Modul 2, hanya untuk halaman di luar tab): `headerStyle: { backgroundColor: warna.surface }`, `headerTintColor: warna.primary` (warna panah kembali), `headerTitleStyle: { color: warna.text, fontWeight: "600" }`, `contentStyle: { backgroundColor: warna.background }`. Halaman tab tidak memakai header Stack (`headerShown: false` di screen `(tabs)`).
+Header Stack (mulai Modul 2, hanya untuk halaman di luar tab): `headerStyle: { backgroundColor: warna.surface }`, `headerTintColor: warna.primary` (warna panah kembali), `headerBackTitle: "Kembali"` (teks di samping panah di iPhone, sama seperti contoh asisten), `headerTitleStyle: { color: warna.text, fontWeight: "600" }`, `contentStyle: { backgroundColor: warna.background }`. Halaman tab tidak memakai header Stack (`headerShown: false` di screen `(tabs)`).
 
 | Halaman | File | Judul header |
 |---|---|---|
-| Detail Praktik | `praktik/[id]` | Detail Praktik |
-| Detail Janji Temu | `janji/[id]` | Detail Janji Temu |
+| Detail Praktik | `praktik/[idPraktik]` | Detail Praktik |
+| Detail Janji Temu | `janji/[idJanji]` | Detail Janji Temu |
 | Ubah Kata Sandi | `ubah-kata-sandi` | Ubah Kata Sandi |
 
 ## 5. Komponen

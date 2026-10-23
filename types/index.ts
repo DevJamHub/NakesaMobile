@@ -7,6 +7,7 @@ export type { Layanan } from "./layanan";
 export type { Praktik } from "./praktik";
 export type { Tone } from "./warna";
 export type { NamaIkon } from "./ikon";
+export type { Pasien, InfoProfil } from "./pasien";
 
 // ===== Bayhaqy =====
 export type { StatusJanji, JanjiTemu, InfoStatusJanji } from "./janjiTemu";

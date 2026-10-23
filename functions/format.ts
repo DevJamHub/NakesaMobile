@@ -53,6 +53,16 @@ export function alamatPraktik(alamat: string, kota: string): string {
     return [alamat, kota].filter((bagian) => bagian !== "").join(", "); // [10]
 }
 
+export function labelHarga(harga: number | null): string {
+    if (harga === null) {
+        return "Tanya harga ke praktik";
+    } else if (harga === 0) {
+        return "Gratis";
+    } else {
+        return formatRupiah(harga);
+    } // [11]
+}
+
 /* ======================== EXPLANATION ========================
 [1]: toLocaleString("id-ID") adalah function bawaan yang memberi titik pemisah ribuan sesuai format
 Indonesia, jadi 75000 menjadi "75.000". Tanda backtick ` ` adalah template literal, jadi kita bisa
@@ -71,4 +81,6 @@ gelar tidak ditulis dua kali. toLowerCase() supaya "Dr." dan "dr." dianggap sama
 [9]: Ternary: kalau ada spesialis, hasilnya "Dokter Spesialis · Anak". Kalau tidak, cukup nama profesinya.
 [10]: filter() membuang bagian yang kosong, lalu join(", ") menggabungkan sisanya dengan koma.
 ["Jl. Ijen 8", "Malang"] menjadi "Jl. Ijen 8, Malang".
+[11]: harga bertipe number | null. null artinya praktik belum mencantumkan harga, 0 artinya gratis,
+selain itu ditulis dalam rupiah dengan formatRupiah(). Contoh: labelHarga(75000) menjadi "Rp 75.000".
 =================================================================*/
