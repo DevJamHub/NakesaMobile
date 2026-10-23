@@ -36,6 +36,7 @@ export default function RootLayout() {
 
                 {/* 3.4: Halaman di Luar Tab */}
                 {/* ===== Sigit ===== */}
+                <Stack.Screen name="praktik/[idPraktik]" options={{ title: "Detail Praktik" }} />
 
                 {/* ===== Bayhaqy ===== */}
 
