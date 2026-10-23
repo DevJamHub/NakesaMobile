@@ -9,9 +9,9 @@ Satu orang pegang satu halaman. Jangan ubah halaman atau file milik teman tanpa 
 | Halaman | File | Pemegang |
 |---|---|---|
 | Beranda | `app/(tabs)/index.tsx` | Sigit |
-| Detail Praktik | `app/praktik/[id].tsx` | Sigit |
+| Detail Praktik | `app/praktik/[idPraktik].tsx` | Sigit |
 | Janji Temu | `app/(tabs)/janji-temu.tsx` | Bayhaqy |
-| Detail Janji Temu | `app/janji/[id].tsx` | Bayhaqy |
+| Detail Janji Temu | `app/janji/[idJanji].tsx` | Bayhaqy |
 | Profil | `app/(tabs)/profil.tsx` | Aditya |
 | Ubah Kata Sandi | `app/ubah-kata-sandi.tsx` | Aditya |
 
@@ -53,7 +53,7 @@ Mulai Modul 2, setiap orang juga harus punya kriteria Modul 2 di file miliknya, 
 - File baru di `components/`, `constants/`, `functions/`, `styles/` dan `types/` wajib didaftarkan di `index.ts` folder itu, **di bagian namamu sendiri** (`// ===== Sigit =====`, `// ===== Bayhaqy =====`, `// ===== Aditya =====`). Jangan menambah baris di bagian orang lain, supaya Git bisa menggabungkan tanpa konflik.
 - Halaman tab (di `app/(tabs)/`) wajib didaftarkan sebagai `<Tabs.Screen>` di `app/(tabs)/_layout.tsx`. Kalau tidak, tabnya muncul dengan nama file dan ikon segitiga.
 - Halaman di luar tab wajib didaftarkan sebagai `<Stack.Screen>` di `app/_layout.tsx`, dengan judul header dari STANDAR bagian 4.
-- Nama file dalam kurung siku (`[id].tsx`) adalah dynamic route. Folder dalam kurung biasa (`(tabs)`) adalah route group yang tidak masuk ke alamat.
+- Nama file dalam kurung siku (`[idPraktik].tsx`) adalah dynamic route. Folder dalam kurung biasa (`(tabs)`) adalah route group yang tidak masuk ke alamat.
 - Import selalu lewat `@/`, misalnya `import { praktiks } from "@/constants";`, bukan `../constants`.
 
 ## Penamaan di dalam kode

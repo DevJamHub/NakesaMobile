@@ -5,6 +5,7 @@ export { default as Avatar } from "./Avatar";
 export { default as KategoriCard } from "./KategoriCard";
 export { default as PraktikCard } from "./PraktikCard";
 export { default as SearchBar } from "./SearchBar";
+export { default as Tombol } from "./Tombol";
 
 // ===== Bayhaqy =====
 export { default as Badge } from "./Badge";

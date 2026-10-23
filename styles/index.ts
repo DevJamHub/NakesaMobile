@@ -2,6 +2,7 @@
 
 // ===== Sigit =====
 export { berandaStyles } from "./beranda";
+export { tombolStyles } from "./tombol";
 
 // ===== Bayhaqy =====
 export { badgeStyles } from "./badge";

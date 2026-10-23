@@ -22,25 +22,25 @@ Sisanya adalah menjawab pertanyaan (15%) dan modifikasi kode langsung (15%). Kar
 
 ```
 app/
-├── _layout.tsx            Stack, membungkus semua halaman (Sigit)
+├── _layout.tsx               Stack, membungkus semua halaman (Sigit)
 ├── (tabs)/
-│   ├── _layout.tsx        tab bawah (Sigit)
-│   ├── index.tsx          Beranda (Sigit)
-│   ├── janji-temu.tsx     Janji Temu (Bayhaqy)
-│   └── profil.tsx         Profil (Aditya)
-├── praktik/[id].tsx       Detail Praktik (Sigit)
-├── janji/[id].tsx         Detail Janji Temu (Bayhaqy)
-└── ubah-kata-sandi.tsx    Ubah Kata Sandi (Aditya)
+│   ├── _layout.tsx           tab bawah (Sigit)
+│   ├── index.tsx             Beranda (Sigit)
+│   ├── janji-temu.tsx        Janji Temu (Bayhaqy)
+│   └── profil.tsx            Profil (Aditya)
+├── praktik/[idPraktik].tsx   Detail Praktik (Sigit)
+├── janji/[idJanji].tsx       Detail Janji Temu (Bayhaqy)
+└── ubah-kata-sandi.tsx       Ubah Kata Sandi (Aditya)
 ```
 
 - `(tabs)` adalah **route group**. Nama folder dalam kurung tidak masuk ke alamat, jadi Beranda tetap `/` dan Janji Temu tetap `/janji-temu`.
-- `[id]` adalah **dynamic route**. Alamat `/praktik/3` membuka file `praktik/[id].tsx` dengan `id` bernilai `"3"`.
+- `[idPraktik]` adalah **dynamic route**. Alamat `/praktik/3` membuka file `praktik/[idPraktik].tsx` dengan `idPraktik` bernilai `"3"`. Nama di dalam kurung siku sama dengan nama id di data, seperti contoh dosen `app/praktikum/[idPraktikum].tsx`.
 - Halaman di `(tabs)` didaftarkan sebagai `<Tabs.Screen>` di `app/(tabs)/_layout.tsx`. Halaman di luar `(tabs)` didaftarkan sebagai `<Stack.Screen>` di `app/_layout.tsx`, dengan judul header dari STANDAR bagian 4.
 - Di kedua `_layout.tsx` ada bagian nama seperti di `index.ts` (`{/* ===== Bayhaqy ===== */}`). Tambahkan screen-mu hanya di bagianmu sendiri, supaya Git bisa menggabungkan tanpa konflik.
 
 ## Cara pindah dan kembali
 
-Ketiga halaman detail memakai pola yang sama. Setiap orang menulis versinya sendiri di halamannya.
+Polanya mengikuti contoh aplikasi dari asisten (repo `cookedRay03/mobile.example.assignment2`, branch `Modul2`, file `app/index.tsx` dan `app/praktikum/[idPraktikum].tsx`). Setiap orang menulis versinya sendiri di halamannya.
 
 ```tsx
 import { router, useLocalSearchParams } from "expo-router";
@@ -49,8 +49,11 @@ import { router, useLocalSearchParams } from "expo-router";
 router.push(`/praktik/${praktik.idPraktik}`);
 
 // Halaman detail: ambil id dari alamat. Hasilnya string, jadi diubah dulu dengan Number()
-const { id } = useLocalSearchParams<{ id: string }>();
+const { idPraktik } = useLocalSearchParams<{ idPraktik: string }>();
+const praktik = getPraktik(Number(idPraktik));
 ```
+
+Pola `useState` + `useEffect` juga sama dengan contoh itu: state menyimpan pilihan (filter), lalu `useEffect` dengan dependency pilihan itu mengisi ulang state daftar yang ditampilkan.
 
 Tombol `Kembali` memanggil function `kembali()` buatanmu sendiri:
 - Kalau `router.canGoBack()` bernilai `true`, panggil `router.back()`.
@@ -93,7 +96,7 @@ Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan 
 5. Kalau `hasilPraktik` kosong, tampilkan `EmptyState` dengan judul `Belum ada praktik`.
 6. Card praktik ditekan → `router.push` ke Detail Praktik. `Lihat semua` → `router.push("/janji-temu")`.
 
-**Detail Praktik (`app/praktik/[id].tsx`)**, header `Detail Praktik`
+**Detail Praktik (`app/praktik/[idPraktik].tsx`)**, header `Detail Praktik`
 1. `PraktikCard` dari praktik yang dibuka, tanpa `onPress`.
 2. Section `Layanan`: daftar layanan praktik itu. Nama layanan (body) di kiri, `labelHarga` (smallStrong) di kanan.
 3. Tombol `Kembali` (kedua). Kalau tidak bisa kembali, `router.replace("/")`.
@@ -103,7 +106,7 @@ Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan 
 - [ ] `functions/praktik.ts`: `cariPraktik(kataKunci, idProfesi)`, pakai `filter()`. Nama praktik dan nama nakes dicocokkan tanpa membedakan huruf besar dan kecil
 - [ ] `types/layanan.ts` dan `constants/layanan.ts`: tambah field `idPraktik`. `functions/layanan.ts`: `getLayananPraktik(idPraktik)`, pakai `filter()`
 - [ ] `components/SearchBar.tsx` dan `components/KategoriCard.tsx`: props baru di atas
-- [ ] `app/praktik/[id].tsx`, styles di `styles/beranda.ts`
+- [ ] `app/praktik/[idPraktik].tsx`, styles di `styles/beranda.ts`
 
 ---
 
@@ -120,7 +123,7 @@ Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan 
 3. Daftar yang kosong tetap memakai `EmptyState` (`Belum ada janji temu` / `Belum ada riwayat`).
 4. Card ditekan → `router.push` ke Detail Janji Temu. Ini menggantikan pop-up status dari Modul 1.
 
-**Detail Janji Temu (`app/janji/[id].tsx`)**, header `Detail Janji Temu`
+**Detail Janji Temu (`app/janji/[idJanji].tsx`)**, header `Detail Janji Temu`
 1. `JanjiTemuCard` dari janji yang dibuka, tanpa `onPress`.
 2. Card status: `Badge` status, lalu penjelasan status (small) dari `getStatusJanji`.
 3. Tombol `Tanya lewat WhatsApp` (whatsapp, `logo-whatsapp`) memunculkan `tampilkanPesan` berjudul `Pesan WhatsApp` dengan isi dari `pesanWhatsApp`. Membuka aplikasi WhatsApp sungguhan menunggu modul berikutnya.
@@ -129,7 +132,7 @@ Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan 
 
 **File**
 - [ ] Tiga file di atas (sebelum langkah 1)
-- [ ] `app/(tabs)/janji-temu.tsx` dan `app/janji/[id].tsx`, styles di `styles/janjiTemu.ts`
+- [ ] `app/(tabs)/janji-temu.tsx` dan `app/janji/[idJanji].tsx`, styles di `styles/janjiTemu.ts`
 - [ ] `<Stack.Screen>` Detail Janji Temu di `app/_layout.tsx`, bagian Bayhaqy
 
 ---
