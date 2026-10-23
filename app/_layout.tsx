@@ -38,6 +38,7 @@ export default function RootLayout() {
                 {/* ===== Sigit ===== */}
 
                 {/* ===== Bayhaqy ===== */}
+                <Stack.Screen name="janji/[idJanji]" options={{ title: "Detail Janji Temu" }} />
 
                 {/* ===== Aditya ===== */}
             </Stack>{/*[5]*/}
