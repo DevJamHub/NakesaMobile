@@ -1,4 +1,179 @@
-# Tugas Modul 1
+# Tugas Modul 2: State, Hooks, dan Navigasi
+
+Modul 2 menambah state, hooks, dan pindah halaman ke app yang sama. Semua hasil Modul 1 harus tetap jalan, karena semua modul diperiksa lagi di akhir semester.
+
+Setiap orang menulis kodenya sendiri di VS Code masing-masing, lalu commit, `git pull origin main`, push, dan membuka PR dari laptop sendiri (ATURAN bagian "Alur kerja GitHub"). Asisten melihat kontribusi tiap orang dari riwayat GitHub.
+
+## Yang dinilai saat demo
+
+Demo dilakukan **sendiri-sendiri**, tanpa membuka modul dan tanpa AI di code editor. Setiap orang harus bisa menunjukkan ketiga kriteria dari file miliknya sendiri:
+
+| Kriteria (bobot) | Sigit | Bayhaqy | Aditya |
+|---|---|---|---|
+| `useState` dan `useEffect` (10%) | Beranda: kolom cari dan pilihan kategori | Janji Temu: pilihan `Akan Datang` / `Riwayat` | Ubah Kata Sandi: isi form dan pesan salah |
+| `router.push()` (10%) | card praktik → Detail Praktik | card janji → Detail Janji Temu | tombol `Ubah kata sandi` di Profil → Ubah Kata Sandi |
+| `router.back()` | tombol `Kembali` | tombol `Kembali` | tombol `Batal`, dan setelah `Simpan` |
+| 1 fungsi expo-router lain | `router.canGoBack()` + `router.replace()` | `router.canGoBack()` + `router.replace()` | `router.canGoBack()` + `router.replace()` |
+| `_layout.tsx` dan `<Stack.Screen>` (10%) | membuat Stack dan `Stack.Screen` Detail Praktik | `Stack.Screen` Detail Janji Temu | `Stack.Screen` Ubah Kata Sandi |
+
+Sisanya adalah menjawab pertanyaan (15%) dan modifikasi kode langsung (15%). Karena itu pahami juga halaman teman, bukan cuma halamanmu sendiri.
+
+## Struktur baru `app/`
+
+```
+app/
+├── _layout.tsx            Stack, membungkus semua halaman (Sigit)
+├── (tabs)/
+│   ├── _layout.tsx        tab bawah (Sigit)
+│   ├── index.tsx          Beranda (Sigit)
+│   ├── janji-temu.tsx     Janji Temu (Bayhaqy)
+│   └── profil.tsx         Profil (Aditya)
+├── praktik/[id].tsx       Detail Praktik (Sigit)
+├── janji/[id].tsx         Detail Janji Temu (Bayhaqy)
+└── ubah-kata-sandi.tsx    Ubah Kata Sandi (Aditya)
+```
+
+- `(tabs)` adalah **route group**. Nama folder dalam kurung tidak masuk ke alamat, jadi Beranda tetap `/` dan Janji Temu tetap `/janji-temu`.
+- `[id]` adalah **dynamic route**. Alamat `/praktik/3` membuka file `praktik/[id].tsx` dengan `id` bernilai `"3"`.
+- Halaman di `(tabs)` didaftarkan sebagai `<Tabs.Screen>` di `app/(tabs)/_layout.tsx`. Halaman di luar `(tabs)` didaftarkan sebagai `<Stack.Screen>` di `app/_layout.tsx`, dengan judul header dari STANDAR bagian 4.
+- Di kedua `_layout.tsx` ada bagian nama seperti di `index.ts` (`{/* ===== Bayhaqy ===== */}`). Tambahkan screen-mu hanya di bagianmu sendiri, supaya Git bisa menggabungkan tanpa konflik.
+
+## Cara pindah dan kembali
+
+Ketiga halaman detail memakai pola yang sama. Setiap orang menulis versinya sendiri di halamannya.
+
+```tsx
+import { router, useLocalSearchParams } from "expo-router";
+
+// Halaman daftar: buka halaman detail dengan id di alamat
+router.push(`/praktik/${praktik.idPraktik}`);
+
+// Halaman detail: ambil id dari alamat. Hasilnya string, jadi diubah dulu dengan Number()
+const { id } = useLocalSearchParams<{ id: string }>();
+```
+
+Tombol `Kembali` memanggil function `kembali()` buatanmu sendiri:
+- Kalau `router.canGoBack()` bernilai `true`, panggil `router.back()`.
+- Kalau `false`, panggil `router.replace(...)` ke halaman daftarnya. Ini terjadi kalau halaman detail dibuka langsung lewat alamat, misalnya di-refresh di browser, sehingga tidak ada halaman sebelumnya.
+
+Kalau id tidak ditemukan (`getPraktik` mengembalikan `undefined`), tampilkan `EmptyState` dengan teks dari STANDAR bagian 7 dan tombol `Kembali`. App tidak boleh error.
+
+## Urutan kerja Modul 2
+
+**Langkah 1: Struktur Stack (Sigit).** Langkah ini memindahkan file Beranda dan Janji Temu, jadi harus di-merge ke `main` paling dulu.
+
+| Yang dibuat Sigit | Keterangan |
+|---|---|
+| Pindahkan `app/index.tsx` dan `app/janji-temu.tsx` ke `app/(tabs)/` | Pakai `git mv`, supaya Git mencatatnya sebagai pindah file, bukan hapus lalu buat baru |
+| `app/(tabs)/_layout.tsx` | Isi tab bawah dipindah dari `app/_layout.tsx`, ditambah bagian nama untuk tab Profil (Aditya) |
+| `app/_layout.tsx` | Ditulis ulang menjadi `Stack`. Kolom 600px di tengah tetap ada. Isinya `<Stack.Screen name="(tabs)" options={{ headerShown: false }} />` dan bagian nama ketiga orang |
+| `components/Tombol.tsx` | Dipindah dari tugas Aditya, karena tombol `Kembali` Sigit dan Bayhaqy membutuhkannya sekarang. Props-nya sama seperti di tugas Modul 1, ditambah jenis `"whatsapp"` |
+| `types/pasien.ts`, `constants/pasien.ts` | Dipindah dari tugas Aditya, karena sapaan Beranda dan pesan WhatsApp Bayhaqy memakai nama pasien. Bentuk dan isinya sama seperti di tugas Modul 1 |
+| `labelHarga` di `functions/format.ts` | Hasilnya sesuai STANDAR bagian 10 |
+
+Selama langkah 1 belum di-merge, Bayhaqy dan Aditya **jangan mengubah file di `app/`**. Kerjakan dulu file di luar `app/` yang disebut di bagian masing-masing.
+
+**Langkah 2: Halaman masing-masing.** Setelah langkah 1 di-merge, setiap orang menjalankan `git switch main`, `git pull`, dan `npm install`, lalu membuat branch baru, misalnya `git switch -c fitur-detail-janji`. Ketiganya bekerja bersamaan.
+
+**Langkah 3: Penyatuan.** Setelah Detail Praktik dan Detail Janji Temu sama-sama di-merge:
+- Sigit: card `Janji temu berikutnya` di Beranda membuka Detail Janji Temu dengan `router.push`.
+- Bayhaqy: di Detail Janji Temu ada tombol `Lihat praktik` yang membuka Detail Praktik dengan `router.push`.
+
+Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan dan bisa didemokan.
+
+---
+
+## Sigit: Beranda dan Detail Praktik
+
+**Beranda (`app/(tabs)/index.tsx`)**
+1. Sapaan memakai nama depan pasien: `Selamat pagi, Budi 👋` (STANDAR bagian 7).
+2. `SearchBar` sekarang menerima props `value` dan `onChangeText`. Teksnya disimpan di state `kataKunci`.
+3. Kartu kategori bisa dipilih. Id profesi yang dipilih disimpan di state `idProfesiTerpilih` (`number | null`). Kalau kategori yang sama ditekan lagi, pilihannya batal. Kartu yang terpilih memakai garis tepi `warna.primary`.
+4. State `hasilPraktik` diisi ulang di `useEffect` setiap kali `kataKunci` atau `idProfesiTerpilih` berubah (dependency `[kataKunci, idProfesiTerpilih]`), pakai function `cariPraktik`.
+5. Kalau `hasilPraktik` kosong, tampilkan `EmptyState` dengan judul `Belum ada praktik`.
+6. Card praktik ditekan → `router.push` ke Detail Praktik. `Lihat semua` → `router.push("/janji-temu")`.
+
+**Detail Praktik (`app/praktik/[id].tsx`)**, header `Detail Praktik`
+1. `PraktikCard` dari praktik yang dibuka, tanpa `onPress`.
+2. Section `Layanan`: daftar layanan praktik itu. Nama layanan (body) di kiri, `labelHarga` (smallStrong) di kanan.
+3. Tombol `Kembali` (kedua). Kalau tidak bisa kembali, `router.replace("/")`.
+
+**File**
+- [ ] Langkah 1 (tabel di atas)
+- [ ] `functions/praktik.ts`: `cariPraktik(kataKunci, idProfesi)`, pakai `filter()`. Nama praktik dan nama nakes dicocokkan tanpa membedakan huruf besar dan kecil
+- [ ] `types/layanan.ts` dan `constants/layanan.ts`: tambah field `idPraktik`. `functions/layanan.ts`: `getLayananPraktik(idPraktik)`, pakai `filter()`
+- [ ] `components/SearchBar.tsx` dan `components/KategoriCard.tsx`: props baru di atas
+- [ ] `app/praktik/[id].tsx`, styles di `styles/beranda.ts`
+
+---
+
+## Bayhaqy: Janji Temu dan Detail Janji Temu
+
+**Bisa dikerjakan sebelum langkah 1 di-merge** (di luar `app/`):
+- [ ] `functions/statusJanji.ts`: tambah `getJanji(idJanji)`, pakai `find()`
+- [ ] `functions/whatsapp.ts`: `pesanWhatsApp(...)`, hasilnya sama persis dengan format di STANDAR bagian 10. Nama pasien dikirim sebagai parameter
+- [ ] `components/Chip.tsx`, dengan props `label: string`, `terpilih: boolean`, `onPress: () => void`. Bentuknya sesuai STANDAR bagian 5 "Chip". Style di `styles/chip.ts`
+
+**Janji Temu (`app/(tabs)/janji-temu.tsx`)**
+1. Di bawah judul ada dua `Chip`: `Akan Datang (2)` dan `Riwayat`. Pilihan disimpan di state `pilihan` (`"akanDatang" | "riwayat"`), awalnya `"akanDatang"`.
+2. State `daftarJanji` diisi ulang di `useEffect` setiap kali `pilihan` berubah, dari `getJanjiAkanDatang()` atau `getRiwayatJanji()`.
+3. Daftar yang kosong tetap memakai `EmptyState` (`Belum ada janji temu` / `Belum ada riwayat`).
+4. Card ditekan → `router.push` ke Detail Janji Temu. Ini menggantikan pop-up status dari Modul 1.
+
+**Detail Janji Temu (`app/janji/[id].tsx`)**, header `Detail Janji Temu`
+1. `JanjiTemuCard` dari janji yang dibuka, tanpa `onPress`.
+2. Card status: `Badge` status, lalu penjelasan status (small) dari `getStatusJanji`.
+3. Tombol `Tanya lewat WhatsApp` (whatsapp, `logo-whatsapp`) memunculkan `tampilkanPesan` berjudul `Pesan WhatsApp` dengan isi dari `pesanWhatsApp`. Membuka aplikasi WhatsApp sungguhan menunggu modul berikutnya.
+4. Tombol `Kembali` (kedua). Kalau tidak bisa kembali, `router.replace("/janji-temu")`.
+5. Langkah 3: tombol `Lihat praktik` (polos).
+
+**File**
+- [ ] Tiga file di atas (sebelum langkah 1)
+- [ ] `app/(tabs)/janji-temu.tsx` dan `app/janji/[id].tsx`, styles di `styles/janjiTemu.ts`
+- [ ] `<Stack.Screen>` Detail Janji Temu di `app/_layout.tsx`, bagian Bayhaqy
+
+---
+
+## Aditya: Profil dan Ubah Kata Sandi
+
+Bagian ini tidak dipakai halaman lain, jadi Aditya bisa mengerjakannya dengan tempo sendiri tanpa menghambat Sigit dan Bayhaqy. Tetap lengkap untuk demo: ketiga kriteria nilai ada di halaman Ubah Kata Sandi.
+
+**Profil (`app/(tabs)/profil.tsx`)**
+Halaman Profil dari Modul 1 belum ada di `main`, jadi diselesaikan dulu sesuai tugas Modul 1 di bawah, dengan tiga perubahan:
+1. Filenya di `app/(tabs)/profil.tsx`, dan tabnya didaftarkan di `app/(tabs)/_layout.tsx` bagian Aditya.
+2. `Tombol`, `types/pasien.ts`, dan `constants/pasien.ts` sudah dibuat Sigit. Tinggal di-import, jangan dibuat ulang.
+3. Tombol `Ubah kata sandi` → `router.push("/ubah-kata-sandi")`, tidak lagi memunculkan pop-up.
+
+**Ubah Kata Sandi (`app/ubah-kata-sandi.tsx`)**, header `Ubah Kata Sandi`
+1. Tiga kolom isian dengan label (caption) di atasnya: `Kata sandi sekarang`, `Kata sandi baru`, `Ulangi kata sandi baru`. Isinya disembunyikan dengan `secureTextEntry`, dan tiap kolom punya state sendiri. Bentuk kolom sama dengan kolom cari (STANDAR bagian 5), tanpa ikon dan bayangan.
+2. State `pesanSalah` diisi di `useEffect` setiap kali kata sandi baru atau ulangannya berubah:
+   - kata sandi baru sudah diisi tapi kurang dari 8 karakter → `Kata sandi minimal 8 karakter.`
+   - ulangan sudah diisi tapi tidak sama → `Kata sandi baru tidak sama.`
+   - selain itu → kosong (`""`)
+3. Kalau `pesanSalah` tidak kosong, tampilkan di bawah kolom (small, warna `warna.danger`).
+4. Tombol `Simpan` (utama): kalau ada kolom kosong atau `pesanSalah` tidak kosong, `tampilkanPesan("Lengkapi semua kolom dengan benar.")`. Kalau sudah benar, `tampilkanPesan("Kata sandi berhasil diubah.")` lalu `kembali()`. Belum ada database, jadi kata sandinya belum benar-benar tersimpan.
+5. Tombol `Batal` (polos) → `kembali()`. Kalau tidak bisa kembali, `router.replace("/profil")`.
+
+**File**
+- [ ] Bisa dikerjakan sebelum langkah 1 di-merge: `components/InfoRow.tsx`, `hitungUmur` di `functions/profil.ts`
+- [ ] Setelah langkah 1: `buatInfoProfil` dan `konfirmasiKeluar` di `functions/profil.ts`, `app/(tabs)/profil.tsx`, `app/ubah-kata-sandi.tsx`, styles di `styles/profil.ts`
+- [ ] Tab Profil di `app/(tabs)/_layout.tsx` dan `<Stack.Screen>` Ubah Kata Sandi di `app/_layout.tsx`, keduanya di bagian Aditya
+
+---
+
+## Modul 2 dianggap selesai kalau
+
+- [ ] Ketiga kriteria nilai ada di file milikmu sendiri (tabel "Yang dinilai saat demo")
+- [ ] Halaman detail tidak error kalau dibuka langsung lewat alamat atau id-nya salah
+- [ ] Semua halaman Modul 1 masih jalan, di Expo Go dan di web
+- [ ] Teks, warna, dan ukuran baru hanya dari STANDAR.md
+- [ ] Format komentar ada: TABLE OF CONTENT, nomor bagian, dan EXPLANATION, termasuk penjelasan `useState`, `useEffect`, dan setiap fungsi `router`
+- [ ] `npx expo lint` dan `npx tsc --noEmit` tidak error, cek GitHub di PR hijau ✅
+- [ ] Kamu bisa menjelaskan setiap baris dan mengubahnya langsung tanpa AI
+
+---
+
+# Tugas Modul 1 (harus tetap jalan)
 
 Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa versi lama. Warna, ukuran, teks, dan hasil function mengikuti [STANDAR.md](STANDAR.md). Cara kerja di GitHub ada di [ATURAN.md](ATURAN.md).
 
@@ -17,7 +192,7 @@ Setiap orang mengerjakan satu halaman sampai tampilannya sama dengan app Nakesa 
 | Sigit | `constants/warna.ts`, `types/ikon.ts`, data bersama, `components/Avatar.tsx`, `app/_layout.tsx` (tab bawah, baru berisi tab Beranda) |
 | Bayhaqy | `components/Badge.tsx`, `components/SectionHeader.tsx`, `components/EmptyState.tsx`, `functions/tanggal.ts` |
 
-Aditya tidak punya bagian fondasi, supaya tidak ada yang menunggu dia. Sebagai gantinya, dia membuat component `InfoRow` dan `Tombol` di dalam tugas halaman Profil.
+Aditya tidak punya bagian fondasi, supaya tidak ada yang menunggu dia. Sebagai gantinya, dia membuat component `InfoRow` di dalam tugas halaman Profil. (`Tombol` awalnya juga tugas Aditya, tapi di Modul 2 dibuat Sigit karena halaman detail membutuhkannya.)
 
 **Langkah 2: Halaman masing-masing.** Ketiganya bekerja bersamaan di branch sendiri. Bayhaqy dan Aditya membuat file halamannya sendiri dan menambahkan tabnya di `app/_layout.tsx` (judul dan ikon ada di STANDAR bagian 4).
 
@@ -177,13 +352,13 @@ type InfoProfil = { ikon: NamaIkon; label: string; nilai: string };
 Isi 1 pasien bernama `Budi Santoso`, dengan `alamat` dan `foto` sengaja dikosongkan supaya `Belum diisi` dan inisial ikut tampil.
 
 **File**
-- [ ] `types/pasien.ts`, `constants/pasien.ts`
+- [ ] ~~`types/pasien.ts`, `constants/pasien.ts`~~ (dibuat Sigit di Modul 2 langkah 1)
 - [ ] `functions/profil.ts`:
   - `hitungUmur(tanggalLahir)`: umur dalam tahun, pakai `if` untuk mengecek apakah ulang tahun tahun ini sudah lewat
   - `buatInfoProfil(pasien)`: menghasilkan array `InfoProfil` dan mengisi `Belum diisi` kalau datanya kosong
   - `konfirmasiKeluar()`: `Alert` dengan dua tombol, memakai callback `onPress`
 - [ ] `components/InfoRow.tsx`, dengan props `ikon: NamaIkon`, `label?: string`, `nilai: string`
-- [ ] `components/Tombol.tsx`, dengan props `judul: string`, `onPress: () => void`, `jenis?: "utama" | "kedua" | "polos" | "bahaya"`, `ikon?: NamaIkon`. Warna tiap jenis dipilih pakai `switch`, bentuknya ada di STANDAR bagian 5.
+- [ ] ~~`components/Tombol.tsx`~~ (dibuat Sigit di Modul 2 langkah 1), dengan props `judul: string`, `onPress: () => void`, `jenis?: "utama" | "kedua" | "polos" | "bahaya"`, `ikon?: NamaIkon`. Warna tiap jenis dipilih pakai `switch`, bentuknya ada di STANDAR bagian 5.
 - [ ] `styles/profil.ts`
 
 **Materi Modul 1 yang harus kelihatan:** `interface`, `readonly`, field opsional `?`, union type, `if` dan `switch`, `map` (baris info), `??` atau ternary untuk `Belum diisi`, `Alert` dengan callback, inline style, external style.
