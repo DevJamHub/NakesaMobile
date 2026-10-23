@@ -10,7 +10,7 @@ Demo dilakukan **sendiri-sendiri**, tanpa membuka modul dan tanpa AI di code edi
 
 | Kriteria (bobot) | Sigit | Bayhaqy | Aditya |
 |---|---|---|---|
-| `useState` dan `useEffect` (10%) | Beranda: kolom cari dan pilihan kategori | Janji Temu: pilihan `Akan Datang` / `Riwayat` | Ubah Kata Sandi: isi form dan pesan salah |
+| `useState` dan `useEffect` (10%) | Beranda: kolom cari | Janji Temu: pilihan `Akan Datang` / `Riwayat` | Ubah Kata Sandi: isi form dan pesan salah |
 | `router.push()` (10%) | card praktik → Detail Praktik | card janji → Detail Janji Temu | tombol `Ubah kata sandi` di Profil → Ubah Kata Sandi |
 | `router.back()` | tombol `Kembali` | tombol `Kembali` | tombol `Batal`, dan setelah `Simpan` |
 | 1 fungsi expo-router lain | `router.canGoBack()` + `router.replace()` | `router.canGoBack()` + `router.replace()` | `router.canGoBack()` + `router.replace()` |
@@ -90,23 +90,19 @@ Halaman Aditya tidak dipakai halaman lain. Kalau belum selesai, app tetap jalan 
 
 **Beranda (`app/(tabs)/index.tsx`)**
 1. Sapaan memakai nama depan pasien: `Selamat pagi, Budi 👋` (STANDAR bagian 7).
-2. `SearchBar` sekarang menerima props `value` dan `onChangeText`. Teksnya disimpan di state `kataKunci`.
-3. Kartu kategori bisa dipilih. Id profesi yang dipilih disimpan di state `idProfesiTerpilih` (`number | null`). Kalau kategori yang sama ditekan lagi, pilihannya batal. Kartu yang terpilih memakai garis tepi `warna.primary`.
-4. State `hasilPraktik` diisi ulang di `useEffect` setiap kali `kataKunci` atau `idProfesiTerpilih` berubah (dependency `[kataKunci, idProfesiTerpilih]`), pakai function `cariPraktik`.
-5. Kalau `hasilPraktik` kosong, tampilkan `EmptyState` dengan judul `Belum ada praktik`.
-6. Card praktik ditekan → `router.push` ke Detail Praktik. `Lihat semua` → `router.push("/janji-temu")`.
+2. `SearchBar` menerima props `value` dan `onChangeText`. Teksnya disimpan di state `kataKunci`.
+3. State `hasilPraktik` diisi ulang di `useEffect` setiap kali `kataKunci` berubah, pakai `cariPraktik`. Kalau kosong, tampilkan `EmptyState` `Belum ada praktik`.
+4. Card praktik ditekan → `router.push` ke Detail Praktik. `Lihat semua` di section `Janji temu berikutnya` → `router.push("/janji-temu")`.
 
 **Detail Praktik (`app/praktik/[idPraktik].tsx`)**, header `Detail Praktik`
 1. `PraktikCard` dari praktik yang dibuka, tanpa `onPress`.
-2. Section `Layanan`: daftar layanan praktik itu. Nama layanan (body) di kiri, `labelHarga` (smallStrong) di kanan.
-3. Tombol `Kembali` (kedua). Kalau tidak bisa kembali, `router.replace("/")`.
+2. Tombol `Kembali` (kedua). Kalau tidak bisa kembali, `router.replace("/")`.
 
 **File**
-- [ ] Langkah 1 (tabel di atas)
-- [ ] `functions/praktik.ts`: `cariPraktik(kataKunci, idProfesi)`, pakai `filter()`. Nama praktik dan nama nakes dicocokkan tanpa membedakan huruf besar dan kecil
-- [ ] `types/layanan.ts` dan `constants/layanan.ts`: tambah field `idPraktik`. `functions/layanan.ts`: `getLayananPraktik(idPraktik)`, pakai `filter()`
-- [ ] `components/SearchBar.tsx` dan `components/KategoriCard.tsx`: props baru di atas
-- [ ] `app/praktik/[idPraktik].tsx`, styles di `styles/beranda.ts`
+- [x] Langkah 1 (tabel di atas)
+- [x] `functions/praktik.ts`: `cariPraktik(kataKunci)`, pakai `filter()`, mencocokkan nama praktik tanpa membedakan huruf besar dan kecil
+- [x] `components/SearchBar.tsx` (props `value`, `onChangeText`) dan `components/PraktikCard.tsx` (`onPress` opsional)
+- [x] `app/(tabs)/index.tsx`, `app/praktik/[idPraktik].tsx`, dan `<Stack.Screen>` Detail Praktik di `app/_layout.tsx`
 
 ---
 

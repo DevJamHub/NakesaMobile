@@ -36,6 +36,7 @@ Mulai Modul 2, setiap orang juga harus punya kriteria Modul 2 di file miliknya, 
 - Data tetap ditulis statis di `constants/`. Belum ada database atau `fetch`.
 - Hook yang dipakai: `useState`, `useEffect`, dan `useLocalSearchParams`. Pindah halaman memakai `router` dari `expo-router`, sesuai pembagian di TUGAS.md.
 - Pop-up memakai `tampilkanPesan` dari `@/functions`, bukan `Alert` langsung, supaya muncul juga di web.
+- Pola `setState` di dalam `useEffect` (seperti contoh asisten) memang dipakai. Aturan lint `react-hooks/set-state-in-effect` sengaja dimatikan di `eslint.config.js` untuk pola ini. Jangan dinyalakan lagi, dan jangan diakali dengan `setTimeout`.
 - Jangan menambah package tanpa bilang ke kelompok. Kalau perlu, pakai `npx expo install <nama-package>`.
 
 ## Letak dan nama file
