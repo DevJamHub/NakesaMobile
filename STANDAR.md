@@ -64,6 +64,14 @@ Font bawaan HP, jangan pakai `fontFamily`.
 | `janji-temu` | Janji Temu | `calendar` / `calendar-outline` |
 | `profil` | Profil | `person` / `person-outline` |
 
+Header Stack (mulai Modul 2, hanya untuk halaman di luar tab): `headerStyle: { backgroundColor: warna.surface }`, `headerTintColor: warna.primary` (warna panah kembali), `headerTitleStyle: { color: warna.text, fontWeight: "600" }`, `contentStyle: { backgroundColor: warna.background }`. Halaman tab tidak memakai header Stack (`headerShown: false` di screen `(tabs)`).
+
+| Halaman | File | Judul header |
+|---|---|---|
+| Detail Praktik | `praktik/[id]` | Detail Praktik |
+| Detail Janji Temu | `janji/[id]` | Detail Janji Temu |
+| Ubah Kata Sandi | `ubah-kata-sandi` | Ubah Kata Sandi |
+
 ## 5. Komponen
 
 **Card**: latar putih, `borderRadius: 16`, `padding: 16`, `borderWidth: 1`, borderColor border, bayangan card. Kalau bisa ditekan, saat ditekan `opacity: 0.85` dan `transform: [{ scale: 0.99 }]`.
@@ -135,6 +143,20 @@ Ikon yang dipakai app lama: `search`, `location-outline`, `calendar-outline`, `t
 | Konfirmasi keluar | Judul `Keluar dari akun?`, pesan `Anda perlu masuk lagi dengan email dan kata sandi untuk membuka janji temu Anda.`, tombol `Tidak` dan `Ya, keluar` |
 | Status praktik | `Sedang buka`, `Sedang tutup` |
 | Jam belum ada | `Jam menyusul` |
+
+Teks tambahan Modul 2:
+
+| Tempat | Teks |
+|---|---|
+| Pilihan di Janji Temu (Chip) | `Akan Datang (2)`, `Riwayat` |
+| Detail Praktik | section `Layanan` |
+| Detail Janji Temu | tombol `Tanya lewat WhatsApp` (whatsapp, `logo-whatsapp`) dan `Lihat praktik` (polos); judul pop-up `Pesan WhatsApp` |
+| Semua halaman detail | tombol `Kembali` (kedua) |
+| Data tidak ditemukan | `Praktik tidak ditemukan`, `Janji temu tidak ditemukan` |
+| Ubah kata sandi, label | `Kata sandi sekarang`, `Kata sandi baru`, `Ulangi kata sandi baru` |
+| Ubah kata sandi, pesan salah | `Kata sandi minimal 8 karakter.`, `Kata sandi baru tidak sama.` (small, warna danger) |
+| Ubah kata sandi, tombol | `Simpan` (utama), `Batal` (polos) |
+| Ubah kata sandi, pop-up | belum benar: `Lengkapi semua kolom dengan benar.`, berhasil: `Kata sandi berhasil diubah.` |
 
 ## 8. Data profesi
 
