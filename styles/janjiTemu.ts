@@ -90,6 +90,21 @@ export const janjiTemuStyles = StyleSheet.create({
         fontWeight: "600",
         color: warna.text,
     },
+
+    barisChip: {
+        flexDirection: "row",
+        gap: 8, // [5]
+    },
+
+    cardStatus: {
+        gap: 8, // [6]
+    },
+
+    penjelasan: {
+        fontSize: 14,
+        lineHeight: 20,
+        color: warna.textMuted,
+    },
 });
 
 /* ======================== EXPLANATION ========================
@@ -100,4 +115,7 @@ supaya pengguna tahu card-nya tertekan.
 turun ke baris berikutnya dan tidak keluar dari card.
 [4]: flexWrap: "wrap" membuat jam turun ke baris kedua kalau tanggal dan jam tidak muat dalam satu baris.
 columnGap adalah jarak mendatar (antara tanggal dan jam), rowGap adalah jarak antar baris.
+[5]: (Modul 2) Dua Chip di halaman Janji Temu disusun mendatar (row) dengan jarak 8.
+[6]: (Modul 2) Card status di halaman Detail Janji Temu memakai style card ditambah gap 8,
+supaya Badge dan teks penjelasan di bawahnya tidak menempel. penjelasan adalah jenis teks small (STANDAR bagian 2).
 =================================================================*/
