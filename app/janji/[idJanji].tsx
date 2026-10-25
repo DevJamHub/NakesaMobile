@@ -44,6 +44,7 @@ export default function DetailJanjiTemu() {
         </ScrollView>
         ); // [4]
     }
+    
 
     // 2.3: Variable & Function Tombol
     const status = getStatusJanji(janji);
@@ -64,7 +65,7 @@ export default function DetailJanjiTemu() {
             <Badge label={status.label} tone={status.tone} titik={true} />
             <Text style={janjiTemuStyles.penjelasan}>{status.penjelasan}</Text>
         </View>{/*[8]*/}
-
+        <Tombol judul="buka demo" jenis="utama" onPress={() => router.push("./demo")} />
         {/* 3.3: Tombol WhatsApp & Kembali */}
         <Tombol judul="Tanya lewat WhatsApp" jenis="whatsapp" ikon="logo-whatsapp" onPress={tanyaWhatsApp} />
         <Tombol judul="Kembali" jenis="kedua" onPress={kembali} />{/*[9]*/}

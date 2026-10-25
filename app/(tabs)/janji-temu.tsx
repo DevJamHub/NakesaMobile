@@ -11,9 +11,13 @@
         3.2: Pilihan Akan Datang / Riwayat
         3.3: Daftar Janji
 ========================================================= */
-
+///SOAL
+//1.Buat satu file bernama demo dengan tipe tsx.
+//2.buat halaman baru di file baru tersebut.
+//3.buat tombol yang menavigasikan ke halaman baru tersebut.
+//4. 
 // 1.1: Import Section
-import { Chip, EmptyState, JanjiTemuCard } from "@/components";
+import { Chip, EmptyState, JanjiTemuCard, Tombol } from "@/components";
 import { getJanjiAkanDatang, getRiwayatJanji } from "@/functions";
 import { janjiTemuStyles } from "@/styles";
 import type { JanjiTemu } from "@/types";
@@ -73,6 +77,7 @@ export default function HalamanJanjiTemu() {
                     onPress={() => setPilihan("riwayat")}
                 />
             </View>{/*[8]*/}
+            <Tombol judul="Buka Demo" jenis="utama" onPress={() => router.push("/janji/Demo")} />
 
             {/* 3.3: Daftar Janji */}
             {daftarJanji.length === 0 ? (
