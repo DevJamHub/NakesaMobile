@@ -39,7 +39,6 @@ export default function RootLayout() {
 
                 {/* ===== Bayhaqy ===== */}
                 <Stack.Screen name="janji/[idJanji]" options={{ title: "Detail Janji Temu" }} />
-                <Stack.Screen name="janji/Demo" options={{ title: "Demo" }} />{/* halaman demo yang baru dibuat */}
                 {/* ===== Aditya ===== */}
             </Stack>{/*[5]*/}
         </View>
