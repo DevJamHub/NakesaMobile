@@ -23,8 +23,8 @@ import Avatar from "@/components/Avatar";
 // 1.2: Props Declaration
 type Props = {
     praktik: Praktik;
-    onPress: () => void;
-};
+    onPress?: () => void;
+}; // [6]
 
 // 1.3: Default Function
 export default function PraktikCard({ praktik, onPress }: Props) {
@@ -42,6 +42,7 @@ export default function PraktikCard({ praktik, onPress }: Props) {
     return (
     <Pressable
         onPress={onPress}
+        disabled={!onPress}
         style={({ pressed }) => [berandaStyles.kartuPraktik, pressed && berandaStyles.kartuDitekan]}
     >
         <View style={berandaStyles.barisPraktik}>
@@ -72,7 +73,7 @@ export default function PraktikCard({ praktik, onPress }: Props) {
             </View>
 
             {/* 3.5: Panah Kanan */}
-            <Ionicons name="chevron-forward" size={20} color={warna.textFaint} />
+            {onPress ? <Ionicons name="chevron-forward" size={20} color={warna.textFaint} /> : null}
         </View>
     </Pressable>
     );
@@ -89,4 +90,7 @@ tergantung praktik.sedangBuka bernilai true atau false.
 setiap profesi punya warna sendiri (Bidan merah muda, Dokter Umum biru, dan seterusnya).
 [5]: Badge "Sedang buka" (hijau) atau "Sedang tutup" (abu-abu), dengan titik kecil di depannya.
 Bentuknya dari berandaStyles, warnanya inline karena bergantung pada praktik.sedangBuka (lihat [3]).
+[6]: Tanda ? artinya onPress boleh tidak dikirim. Di Beranda card ini dikirimi onPress (membuka Detail
+Praktik). Di halaman Detail Praktik card ini hanya tampilan, jadi tanpa onPress: disabled={!onPress}
+membuat card tidak bisa ditekan, dan panah kanan tidak ditampilkan (STANDAR.md bagian 5).
 =================================================================*/

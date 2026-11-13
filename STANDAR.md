@@ -149,7 +149,6 @@ Teks tambahan Modul 2:
 | Tempat | Teks |
 |---|---|
 | Pilihan di Janji Temu (Chip) | `Akan Datang (2)`, `Riwayat` |
-| Detail Praktik | section `Layanan` |
 | Detail Janji Temu | tombol `Tanya lewat WhatsApp` (whatsapp, `logo-whatsapp`) dan `Lihat praktik` (polos); judul pop-up `Pesan WhatsApp` |
 | Semua halaman detail | tombol `Kembali` (kedua) |
 | Data tidak ditemukan | `Praktik tidak ditemukan`, `Janji temu tidak ditemukan` |

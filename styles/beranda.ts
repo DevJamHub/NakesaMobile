@@ -191,6 +191,12 @@ export const berandaStyles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
     },
+
+    // Detail Praktik
+    isiDetail: {
+        padding: 16,
+        gap: 16,
+    },
 });
 
 /* ======================== EXPLANATION ========================
