@@ -12,5 +12,6 @@ export { tampilkanPesan } from "./pesan";
 export { tanggalHariIni, formatTanggal, tanggalRamah, formatJam } from "./tanggal";
 export { getStatusJanji, getJanjiAkanDatang, getRiwayatJanji, getJanjiBerikutnya, getJanji } from "./statusJanji";
 export { pesanWhatsApp } from "./whatsapp";
+export { ambilHariLibur, ambilHariLiburDenganBatas, cekHariLibur } from "./hariLibur";
 
 // ===== Aditya =====

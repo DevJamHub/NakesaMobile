@@ -8,11 +8,12 @@
     2.4: Main Render
         3.1: Card Janji Temu
         3.2: Card Status
-        3.3: Tombol WhatsApp & Kembali
+        3.3: Info Hari Libur (Modul 3)
+        3.4: Tombol WhatsApp & Kembali
 ========================================================= */
 
 // 1.1: Import Section
-import { Badge, EmptyState, JanjiTemuCard, Tombol } from "@/components";
+import { Badge, EmptyState, InfoHariLibur, JanjiTemuCard, Tombol } from "@/components";
 import { pasien } from "@/constants";
 import { getJanji, getStatusJanji, pesanWhatsApp, tampilkanPesan } from "@/functions";
 import { janjiTemuStyles } from "@/styles";
@@ -65,8 +66,11 @@ export default function DetailJanjiTemu() {
             <Badge label={status.label} tone={status.tone} titik={true} />
             <Text style={janjiTemuStyles.penjelasan}>{status.penjelasan}</Text>
         </View>{/*[8]*/}
-        <Tombol judul="buka demo" jenis="utama" onPress={() => router.push("./demo")} />
-        {/* 3.3: Tombol WhatsApp & Kembali */}
+
+        {/* 3.3: Info Hari Libur (Modul 3) */}
+        <InfoHariLibur tanggal={janji.tanggal} />{/*[10]*/}
+
+        {/* 3.4: Tombol WhatsApp & Kembali */}
         <Tombol judul="Tanya lewat WhatsApp" jenis="whatsapp" ikon="logo-whatsapp" onPress={tanyaWhatsApp} />
         <Tombol judul="Kembali" jenis="kedua" onPress={kembali} />{/*[9]*/}
 
@@ -101,4 +105,8 @@ header Stack (didaftarkan di app/_layout.tsx bagian Bayhaqy). Karena itu tidak p
 lalu teks penjelasan diambil dari getStatusJanji() (STANDAR bagian 9).
 [9]: Tombol buatan Sigit (components/Tombol.tsx). jenis menentukan warnanya: "whatsapp" hijau dengan
 ikon logo-whatsapp, "kedua" putih bergaris primary. onPress={kembali} meneruskan function dari [1].
+[10]: Tambahan Modul 3. Component InfoHariLibur (components/InfoHariLibur.tsx) mengambil data hari libur
+nasional dari External API Nager.Date dan mengecek apakah tanggal janji ini hari libur. Selama menunggu
+server, muncul loading; kalau gagal, muncul pesan dan tombol "Coba lagi". Bagian lain halaman ini tetap
+tampil tanpa menunggu API, karena request-nya berjalan asynchronous di dalam component itu.
 =================================================================*/
