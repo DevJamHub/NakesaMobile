@@ -10,7 +10,12 @@ npm install
 npx expo start --go
 ```
 
-Scan QR code-nya dengan aplikasi Expo Go.
+Scan QR code-nya dengan aplikasi Expo Go. Project ini memakai **Expo SDK 58**, jadi Expo Go di HP harus versi terbaru (update dulu dari App Store / Play Store).
+
+- **Android**: scan QR dari dalam aplikasi Expo Go.
+- **iPhone**: scan QR dengan aplikasi **Kamera** bawaan, lalu ketuk notifikasi "Buka di Expo Go".
+- Laptop dan HP harus tersambung ke Wi-Fi yang sama. Kalau tetap tidak tersambung (misalnya Wi-Fi kampus), jalankan `npx expo start --go --tunnel`.
+- Setelah `git pull` yang mengubah `package.json`, jalankan `npm install` lagi.
 
 ## Struktur folder
 

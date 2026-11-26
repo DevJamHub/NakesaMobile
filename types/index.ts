@@ -11,5 +11,6 @@ export type { Pasien, InfoProfil } from "./pasien";
 
 // ===== Bayhaqy =====
 export type { StatusJanji, JanjiTemu, InfoStatusJanji } from "./janjiTemu";
+export type { HariLibur, StatusCekLibur } from "./hariLibur";
 
 // ===== Aditya =====

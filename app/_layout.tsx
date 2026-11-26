@@ -39,7 +39,7 @@ export default function RootLayout() {
                 <Stack.Screen name="praktik/[idPraktik]" options={{ title: "Detail Praktik" }} />
 
                 {/* ===== Bayhaqy ===== */}
-
+                <Stack.Screen name="janji/[idJanji]" options={{ title: "Detail Janji Temu" }} />
                 {/* ===== Aditya ===== */}
             </Stack>{/*[5]*/}
         </View>

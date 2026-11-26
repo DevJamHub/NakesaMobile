@@ -17,13 +17,13 @@ import { formatJam, getLayanan, getPraktik, getProfesi, getStatusJanji, tanggalR
 import { janjiTemuStyles } from "@/styles";
 import type { JanjiTemu } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 // 1.2: Props Declaration
-type Props = { janji: JanjiTemu }; // [1]
+type Props = { janji: JanjiTemu; onPress?: () => void }; // [1]
 
 // 1.3: Default Function
-export default function JanjiTemuCard({ janji }: Props) {
+export default function JanjiTemuCard({ janji, onPress }: Props) {
 
     // 2.1: Variable & Condition
     const praktik = getPraktik(janji.idPraktik); // [2]
@@ -43,7 +43,8 @@ export default function JanjiTemuCard({ janji }: Props) {
     return (
     <Pressable
         style={({ pressed }) => [janjiTemuStyles.card, pressed ? janjiTemuStyles.cardDitekan : null]}
-        onPress={() => Alert.alert(status.label, status.penjelasan)}
+        onPress={onPress}
+        disabled={onPress === undefined}
     >{/*[5]*/}
 
         {/* 3.1: Avatar, Nama Praktik & Layanan */}
@@ -74,8 +75,11 @@ export default function JanjiTemuCard({ janji }: Props) {
 }
 
 /* ======================== EXPLANATION ========================
-[1]: Component ini menerima 1 props bernama "janji" yang bentuknya harus sesuai type JanjiTemu di @/types.
-Contoh pemakaian: <JanjiTemuCard janji={janji} />. Card ini dipakai di halaman Janji Temu dan Beranda.
+[1]: Component ini menerima 2 props:
+- janji: wajib, bentuknya harus sesuai type JanjiTemu di @/types.
+- onPress: boleh tidak dikirim (tanda ?). Isinya function yang dijalankan saat card ditekan.
+Contoh pemakaian: <JanjiTemuCard janji={janji} onPress={() => bukaDetail(janji.idJanji)} />.
+Di halaman Detail Janji Temu card dipakai tanpa onPress: <JanjiTemuCard janji={janji} />.
 [2]: Data janji temu hanya menyimpan idPraktik. getPraktik() mencari object praktiknya di constants/praktik.ts.
 Hasilnya object Praktik, atau undefined kalau id-nya tidak ditemukan.
 [3]: Kalau praktiknya tidak ditemukan, component mengembalikan null, artinya card tidak ditampilkan.
@@ -86,7 +90,10 @@ Setelah baris ini TypeScript tahu bahwa praktik pasti ada, jadi praktik.idProfes
 [5]: Pressable membuat card bisa ditekan.
 - style diberi function yang menerima { pressed }. Saat ditekan, pressed bernilai true, jadi style
   cardDitekan ditambahkan. Saat tidak ditekan, yang ditambahkan null (tidak ada).
-- onPress memunculkan Alert dengan judul label status dan isi penjelasan status dari getStatusJanji().
+- onPress menjalankan function dari props. Di Modul 1 isinya Alert status. Mulai Modul 2, halaman yang
+  memakai card ini yang menentukan isinya, misalnya halaman Janji Temu membuka halaman detail dengan router.push().
+- disabled={onPress === undefined}: kalau onPress tidak dikirim, card tidak bisa ditekan (dan tidak
+  mengecil saat disentuh), seperti di halaman detail.
 [6]: Avatar buatan Sigit. Karena tidak ada foto, yang tampil emoji profesi di lingkaran berwarna profesi.
 [7]: Avatar dan Badge diimpor langsung dari file-nya, bukan dari "@/components". Alasannya,
 components/index.ts juga mengekspor JanjiTemuCard. Kalau JanjiTemuCard mengimpor dari index itu,
