@@ -37,7 +37,6 @@ export default function HalamanJanjiTemu() {
     const [daftarJanji, setDaftarJanji] = useState<JanjiTemu[]>(getJanjiAkanDatang()); // [4]
 
     // 2.2: Effect
-    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (pilihan === "akanDatang") {
             setDaftarJanji(getJanjiAkanDatang());
@@ -45,7 +44,6 @@ export default function HalamanJanjiTemu() {
             setDaftarJanji(getRiwayatJanji());
         }
     }, [pilihan]); // [5]
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     // 2.3: Variable
     const jumlahAkanDatang = getJanjiAkanDatang().length;
@@ -106,10 +104,6 @@ Urutannya: Chip ditekan → setPilihan() mengubah pilihan → halaman re-render 
 setDaftarJanji() mengisi daftar baru → halaman re-render lagi dengan daftar yang baru.
 Kalau [pilihan] dihapus, useEffect jalan setiap render. Kalau diganti [], hanya jalan sekali saat dibuka,
 jadi menekan Chip tidak mengubah daftar.
-Komentar eslint-disable / eslint-enable di atas dan bawah useEffect mematikan satu aturan lint
-(react-hooks/set-state-in-effect) khusus di bagian ini. Aturan itu menyarankan tidak memanggil set state langsung
-di dalam useEffect karena membuat render dua kali. Kita tetap memakai pola ini karena memang diminta TUGAS.md
-dan sama dengan contoh asisten, dan datanya kecil sehingga tidak berpengaruh ke kecepatan app.
 [6]: Ternary operator. Teks tampilan kosong menyesuaikan pilihan (STANDAR bagian 7).
 jumlahAkanDatang dipakai di label Chip, jadi teksnya "Akan Datang (2)" sesuai jumlah data.
 [7]: SafeAreaView memberi jarak di bagian atas supaya judul tidak tertutup status bar atau notch HP.
