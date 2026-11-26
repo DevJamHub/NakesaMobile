@@ -5,7 +5,7 @@ export const janjiTemus: JanjiTemu[] = [ // [1]
         idJanji: 1,
         idPraktik: 1,
         idLayanan: 1,
-        tanggal: "2026-11-10",
+        tanggal: "2026-12-25", // [5]
         jamMulai: "08:30",
         jamSelesai: "09:00",
         status: "dikonfirmasi",
@@ -60,4 +60,6 @@ Janji 1 dan 2 tanggalnya setelah hari demo, jadi masuk "Akan Datang". Sisanya ma
 [2]: Janji ini tidak punya jamMulai dan jamSelesai, jadi card menampilkan "Jam menyusul".
 [3]: Statusnya "baru" tetapi tanggalnya sudah lewat, jadi ditampilkan sebagai "Sudah lewat".
 [4]: Janji ini tidak punya idLayanan, jadi card menampilkan nama profesi praktiknya.
+[5]: Modul 3: tanggal ini sengaja hari libur nasional (Natal, dari API tertulis "Christmas Day"), supaya di halaman Detail Janji Temu
+data dari API menampilkan "Hari libur". Janji 2 (17 November) bukan hari libur, sebagai pembanding.
 =================================================================*/

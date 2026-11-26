@@ -10,6 +10,9 @@ export { tampilkanPesan } from "./pesan";
 
 // ===== Bayhaqy =====
 export { tanggalHariIni, formatTanggal, tanggalRamah, formatJam } from "./tanggal";
-export { getStatusJanji, getJanjiAkanDatang, getRiwayatJanji, getJanjiBerikutnya } from "./statusJanji";
+export { getStatusJanji, getJanjiAkanDatang, getRiwayatJanji, getJanjiBerikutnya, getJanji } from "./statusJanji";
+export { pesanWhatsApp } from "./whatsapp";
+export { ambilHariLibur, ambilHariLiburDenganBatas, cekHariLibur } from "./hariLibur";
+export { konfirmasiKeluar } from "./profil";
 
 // ===== Aditya =====

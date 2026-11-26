@@ -5,6 +5,7 @@
         3.1: Pengaturan Tab Bawah
         3.2: Tab Beranda
         3.3: Tab Janji Temu
+        3.4: Tab Profil
 ========================================================= */
 
 // 1.1: Import Section
@@ -34,8 +35,8 @@ export default function TabsLayout() {
             name="index" // [2]
             options={{
                 title: "Beranda",
-                tabBarIcon: ({ color, size, focused }) => (
-                    <Ionicons name={focused ? "home" : "home-outline"} size={size} color={color} />
+                tabBarIcon: ({ size, focused }) => (
+                    <Ionicons name={focused ? "home" : "home-outline"} size={size} color={focused ? warna.primary : warna.textFaint} />
                 ), // [3]
             }}
         />
@@ -46,8 +47,19 @@ export default function TabsLayout() {
             name="janji-temu"
             options={{
                 title: "Janji Temu",
-                tabBarIcon: ({ color, size, focused }) => (
-                    <Ionicons name={focused ? "calendar" : "calendar-outline"} size={size} color={color} />
+                tabBarIcon: ({ size, focused }) => (
+                    <Ionicons name={focused ? "calendar" : "calendar-outline"} size={size} color={focused ? warna.primary : warna.textFaint} />
+                ),
+            }}
+        />
+
+        {/* 3.4: Tab Profil */}
+        <Tabs.Screen
+            name="profil"
+            options={{
+                title: "Profil",
+                tabBarIcon: ({ size, focused }) => (
+                    <Ionicons name={focused ? "person" : "person-outline"} size={size} color={focused ? warna.primary : warna.textFaint} />
                 ),
             }}
         />
@@ -62,10 +74,12 @@ export default function TabsLayout() {
 app lama.
 [2]: name harus sama dengan nama file di folder app/(tabs)/: "index" untuk app/(tabs)/index.tsx dan
 "janji-temu" untuk app/(tabs)/janji-temu.tsx. Setiap halaman tab baru wajib didaftarkan di sini, di bagian
-nama pembuatnya. Kalau tidak, tab-nya tetap muncul tapi dengan nama file dan ikon segitiga. Tab Profil
-ditambahkan di bagian Aditya dengan bentuk yang sama (judul "Profil", ikon person / person-outline,
-lihat STANDAR.md bagian 4).
-[3]: tabBarIcon menerima function (callback) yang dipanggil oleh Tabs. Tabs mengirim color, size,
-dan focused (true kalau tab sedang dibuka). Dengan ternary, ikon penuh dipakai saat tab aktif
-dan ikon outline saat tidak aktif.
+nama pembuatnya. Kalau tidak, tab-nya tidak muncul di tab bawah (aturan Expo SDK 58). Tab Profil
+(3.4, Modul 4) memakai bentuk yang sama: judul "Profil", ikon person / person-outline (STANDAR.md bagian 4).
+[3]: tabBarIcon menerima function (callback) yang dipanggil oleh Tabs. Tabs mengirim size dan focused
+(true kalau tab sedang dibuka). Dengan ternary, ikon penuh dipakai saat tab aktif dan ikon outline saat
+tidak aktif. Warna ikon juga memakai ternary: warna.primary saat aktif dan warna.textFaint saat tidak
+aktif, sama dengan tabBarActiveTintColor dan tabBarInactiveTintColor di atas. Tabs sebenarnya juga
+mengirim color, tapi sejak Expo SDK 58 tipenya tidak cocok dengan prop color milik Ionicons sehingga
+tsc error, jadi warnanya ditulis langsung dari constants.
 =================================================================*/

@@ -7,6 +7,7 @@
 1.4: getJanjiAkanDatang
 1.5: getRiwayatJanji
 1.6: getJanjiBerikutnya
+1.7: getJanji
 ========================================================= */
 
 // 1.1: Import Section
@@ -96,6 +97,13 @@ export function getJanjiBerikutnya(): JanjiTemu | undefined {
     return getJanjiAkanDatang()[0]; // [8]
 }
 
+// 1.7: getJanji
+export function getJanji(idJanji: number): JanjiTemu | undefined {
+    return janjiTemus.find(
+        (janji) => janji.idJanji === idJanji
+    ); // [10]
+}
+
 /* ======================== EXPLANATION ========================
 [1]: Status "baru" dan "dikonfirmasi" artinya janji temunya masih berjalan. || artinya "atau",
 jadi hasilnya true kalau status salah satu dari keduanya.
@@ -115,4 +123,9 @@ undefined, makanya return type-nya JanjiTemu | undefined. Function ini dipakai d
 [9]: tanggalHariIni diimpor langsung dari file tanggal.ts, bukan dari "@/functions". Alasannya,
 functions/index.ts juga mengekspor file ini. Kalau file ini mengimpor dari index itu, keduanya saling
 memanggil berputar (require cycle) dan Expo memberi warning kuning.
+[10]: find() adalah function bawaan array yang mengembalikan item pertama yang cocok dengan syaratnya,
+yaitu janji yang idJanji-nya sama dengan idJanji yang dikirim. Kalau tidak ada yang cocok, hasilnya
+undefined, makanya return type-nya JanjiTemu | undefined (union type).
+Contoh: getJanji(1) memberi object janji nomor 1, getJanji(99) memberi undefined.
+Dipakai di halaman Detail Janji Temu untuk mencari janji dari id yang ada di alamat.
 =================================================================*/

@@ -9,5 +9,8 @@ export { badgeStyles } from "./badge";
 export { sectionHeaderStyles } from "./sectionHeader";
 export { emptyStateStyles } from "./emptyState";
 export { janjiTemuStyles } from "./janjiTemu";
+export { chipStyles } from "./chip";
+export { hariLiburStyles } from "./hariLibur";
+export { akunStyles } from "./akun";
 
 // ===== Aditya =====
